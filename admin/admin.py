@@ -1,16 +1,15 @@
-from typing import List
+from functools import lru_cache
 
-from email_validator import EmailNotValidError, validate_email
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from fastapi_mail import FastMail, MessageSchema
 from sqlalchemy.orm import Session
 from starlette.responses import JSONResponse
 
-from admin.app import models, schemas
-from admin.app.auth import AuthHandler
 from database import SessionLocal, engine
 from settings import Settings
+
+from .app import models, schemas
+from .app.auth import AuthHandler
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -25,12 +24,17 @@ def get_db():
         db.close()
 
 
-auth_handler = AuthHandler()
+auth_handler = (
+    AuthHandler()
+)  # An instance of AuthHandler class from auth.py which contains authentication functions.
 
-settings = Settings()
+"""
+ API Endpoints for "Admin" submodule.
+
+"""
 
 
-@router.post("/register/", response_model=schemas.User, tags=["User"])
+@router.post("/register", response_model=schemas.User, tags=["User CRUD"])
 async def register(
     user: schemas.UserCreate,
     db: Session = Depends(get_db),
@@ -49,45 +53,51 @@ async def register(
             status_code=200,
             detail=f"'{user.staff_type}' account with the username: '{user.username}' created successfully.",
         )
-    if user.username:
+    if user_db:
         raise HTTPException(
             status_code=400,
-            detail=f"User with the username '{user.username}' already exists.",
+            detail=f"User with the username '{user.username}' already exists, pick another username.",
         )
 
 
-@router.post("/login", tags=["User"])
+@router.post("/login", tags=["Common APIs"])
 def login(
     form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ):
-    user = auth_handler.get_user_by_username(db, form_data.username)
+    user_db = auth_handler.get_user_by_username(db, form_data.username)
+    if not user_db:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f" User '{form_data.username}' doesn't exist, try again.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
-    password = user.password
+    password = user_db.password
     verify_password = auth_handler.verify_password(form_data.password, password)
-
     if not verify_password:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect Password, try again.",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    username = user.username
+    username = user_db.username
     token = auth_handler.encode_token(username)
     return {"token": token, "token_type": "Bearer"}
 
 
-@router.get("/profile", tags=["User"])
+@router.get("/profile", tags=["Common APIs"])
 def profile(username=Depends(auth_handler.auth_wrapper), db: Session = Depends(get_db)):
     current_user = auth_handler.get_user_by_username(db, username)
-
     username = current_user.username
     full_name = current_user.full_name
+    staff_type = current_user.staff_type
     return JSONResponse(
-        status_code=200, content={"username": username, "full_name": full_name}
+        status_code=200,
+        content={"username": username, "full_name": full_name, "Role": staff_type},
     )
 
 
-@router.patch("/change-password", tags=["User"])
+@router.patch("/change-password", tags=["Common APIs"])
 async def change_password(
     reset_password: schemas.ChangePassword,
     username=Depends(auth_handler.auth_wrapper),

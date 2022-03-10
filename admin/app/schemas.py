@@ -14,6 +14,7 @@ class Staff(str, Enum):
     INVENTORY_STAFF = "Inventory Staff"
     KITCHEN_STAFF = "Kitchen Staff"
     CASHIER = "Cashier"
+    ADMIN = "Admin"
 
 
 class UserCreate(UserBase):

@@ -2,6 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 
 from admin import admin
+from inventory import inventory
 
 description = """
 Based on the authentication levels, these API endpoints allow you to perform the following actions. ✔️
@@ -52,6 +53,7 @@ You will be able to:
 
 
 """
+# An instance of FastAPI class.
 # app = FastAPI(
 #     title="Restaurant Management System (RMS) API",
 #     description=description,
@@ -63,8 +65,13 @@ You will be able to:
 #         "email": "artdityadulal@gmail.com",
 #     },
 # )
+
+
 app = FastAPI()
+
+# Including the routers of the submodules respectively.
 app.include_router(admin.router)
+app.include_router(inventory.router)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=5005)
