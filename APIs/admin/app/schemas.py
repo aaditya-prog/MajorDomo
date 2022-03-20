@@ -38,3 +38,22 @@ class ChangePassword(BaseModel):
     old_password: str
     new_password: str
     confirm_password: str
+
+
+"""
+    Food menu schema
+
+"""
+
+
+class FoodData(BaseModel):
+    food_name: str
+    food_category: str
+    food_price: float
+
+
+class Food(FoodData):
+    food_id: int
+
+    class Config:
+        orm_mode = True

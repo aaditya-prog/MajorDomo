@@ -1,6 +1,6 @@
-from functools import lru_cache
+from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status, UploadFile
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from starlette.responses import JSONResponse
@@ -8,7 +8,7 @@ from starlette.responses import JSONResponse
 from database import SessionLocal, engine
 from settings import Settings
 
-from .app import models, schemas
+from .app import crud, models, schemas
 from .app.auth import AuthHandler
 
 models.Base.metadata.create_all(bind=engine)
@@ -36,14 +36,14 @@ auth_handler = (
 
 @router.post("/register", response_model=schemas.User, tags=["User CRUD"])
 async def register(
-    user: schemas.UserCreate,
-    db: Session = Depends(get_db),
+        user: schemas.UserCreate,
+        db: Session = Depends(get_db),
 ):
     if not auth_handler.validate_password(user.password):
         raise HTTPException(
             status_code=401,
             detail=f"Password not accepted. It must contain one uppercase letter, one lowercase letter, one numeral, "
-            f"one special character and should be longer than 6 characters and shorter than 20 characters",
+                   f"one special character and should be longer than 6 characters and shorter than 20 characters",
         )
 
     user_db = auth_handler.get_user_by_username(db, username=user.username)
@@ -62,7 +62,7 @@ async def register(
 
 @router.post("/login", tags=["Common APIs"])
 def login(
-    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+        form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ):
     user_db = auth_handler.get_user_by_username(db, form_data.username)
     if not user_db:
@@ -99,9 +99,9 @@ def profile(username=Depends(auth_handler.auth_wrapper), db: Session = Depends(g
 
 @router.patch("/change-password", tags=["Common APIs"])
 async def change_password(
-    reset_password: schemas.ChangePassword,
-    username=Depends(auth_handler.auth_wrapper),
-    db: Session = Depends(get_db),
+        reset_password: schemas.ChangePassword,
+        username=Depends(auth_handler.auth_wrapper),
+        db: Session = Depends(get_db),
 ):
     current_user = auth_handler.get_user_by_username(db, username=username)
     print(current_user)
@@ -123,3 +123,47 @@ async def change_password(
     auth_handler.check_reset_password(reset_password.new_password, current_user.id, db)
 
     return {"message": f"Password updated for the user: {current_user.username}"}
+
+
+"""
+ API Endpoints for Food Menu CRUD Operations.
+"""
+
+
+# Show all food of food menu
+@router.get("/food_menu/", tags=["Food Menu"])
+def get_food(db: Session = Depends(get_db)):
+    return crud.get_food(db=db)
+
+
+# Show food by selected category
+@router.get("/food_menu_by_category/", tags=["Food Menu"])
+def get_food_category(category: List[str] = Query(None), db: Session = Depends(get_db)):
+    result = []
+    for each_category in category:
+        db_category = crud.get_food_by_category(db=db, category=each_category)
+        result = result + db_category
+    return result
+
+
+# Add new food item
+@router.post("/food_menu/", tags=["Food Menu"])
+def create_food(new_food: schemas.FoodData, db: Session = Depends(get_db)):
+    return crud.create_food(db=db, new_food=new_food)
+
+
+# Update food details
+@router.put("/food_menu/{food_id}/", tags=["Food Menu"])
+def update_food(food_id: int, food: schemas.FoodData, db: Session = Depends(get_db)):
+    return crud.update_food(db=db, food=food, food_id=food_id)
+
+
+# Delete food
+@router.delete("/food_menu/{food_id}/", tags=["Food Menu"])
+def delete_food(food_id: int, db: Session = Depends(get_db)):
+    return crud.delete_food(db=db, food_id=food_id)
+
+#
+# @router.post("/upload_file/")
+# async def create_upload_file(file: UploadFile):
+#     return {"filename": file.filename}

@@ -52,7 +52,6 @@ def get_item_category(category: List[str] = Query(None), db: Session = Depends(g
 @router.post("/add_item/", tags=["Inventory CRUD"])
 def create_item(new_item: schemas.InventoryData, db: Session = Depends(get_db)):
     return crud.create_item(db=db, new_item=new_item)
-    print(datetime.datetime.now())
 
 
 # Update item details.

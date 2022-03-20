@@ -1,7 +1,8 @@
 from datetime import datetime
 from enum import unique
 
-from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String
+from sqlalchemy import (Boolean, Column, DateTime, Float, ForeignKey, Integer,
+                        String)
 from sqlalchemy.orm import relationship, validates
 from sqlalchemy.sql.sqltypes import Date
 
