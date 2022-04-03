@@ -33,15 +33,15 @@ def get_db():
 
 
 # Show all items in the inventory.
-@router.get("/item_list/", tags=["Inventory CRUD"])
+@router.get("api/inventory/item-list/", tags=["Inventory CRUD"])
 def get_item(db: Session = Depends(get_db)):
     return crud.get_items(db=db)
 
 
 # Show items by selected category
-@router.get("/item_by_category/", tags=["Inventory CRUD"])
+@router.get("api/inventory/item-by-category/", tags=["Inventory CRUD"])
 def get_item_category(category: List[str] = Query(None), db: Session = Depends(get_db)):
-    result = []
+    result: List = []
     for each_category in category:
         db_category = crud.get_item_by_category(db=db, category=each_category)
         result = result + db_category
@@ -49,13 +49,13 @@ def get_item_category(category: List[str] = Query(None), db: Session = Depends(g
 
 
 # Add new item in inventory.
-@router.post("/add_item/", tags=["Inventory CRUD"])
+@router.post("api/inventory/add-item/", tags=["Inventory CRUD"])
 def create_item(new_item: schemas.InventoryData, db: Session = Depends(get_db)):
     return crud.create_item(db=db, new_item=new_item)
 
 
 # Update item details.
-@router.put("/update_item/{item_id}/", tags=["Inventory CRUD"])
+@router.put("api/inventory/update-item/{item-id}/", tags=["Inventory CRUD"])
 def update_item(
     item_id: int, item: schemas.InventoryData, db: Session = Depends(get_db)
 ):
@@ -63,6 +63,6 @@ def update_item(
 
 
 # Delete item from inventory.
-@router.delete("/delete_item/{item_id}/", tags=["Inventory CRUD"])
+@router.delete("api/inventory/delete-item/{item-id}/", tags=["Inventory CRUD"])
 def delete_item(item_id: int, db: Session = Depends(get_db)):
     return crud.delete_item(db=db, item_id=item_id)

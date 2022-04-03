@@ -1,5 +1,6 @@
 import uvicorn
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from admin import admin
 from inventory import inventory
@@ -54,20 +55,28 @@ You will be able to:
 
 """
 # An instance of FastAPI class.
-# app = FastAPI(
-#     title="Restaurant Management System (RMS) API",
-#     description=description,
-#     # version="0.0.1",
-#     # terms_of_service="http://example.com/terms/",
-#     contact={
-#         "name": "Aaditya Dulal",
-#         "url": "https://aadityadulal.com",
-#         "email": "artdityadulal@gmail.com",
-#     },
-# )
 
+app = FastAPI(
+    title="Restaurant Management System (RMS) API",
+    # description=description,
+    # version="0.0.1",
+    # terms_of_service="http://example.com/terms/",
+    contact={
+        "name": "Aaditya Dulal",
+        "url": "https://aadityadulal.com",
+        "email": "artdityadulal@gmail.com",
+    },
+)
 
-app = FastAPI()
+origins = ["http://localhost:3000", "localhost:3000"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Including the routers of the submodules respectively.
 app.include_router(admin.router)

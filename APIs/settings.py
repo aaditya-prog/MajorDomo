@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from typing import Optional
 
 from dotenv import load_dotenv
 from fastapi_mail import ConnectionConfig
@@ -12,24 +13,24 @@ load_dotenv(dotenv_path=env_path)
 
 class Settings(BaseSettings):
     # Project Details
-    PROJECT_NAME: str = "FastAPI Restaurant Management System(RMS)"
-    PROJECT_VERSION: str = "1.0.0"
+    PROJECT_NAME: Optional[str] = "FastAPI Restaurant Management System(RMS)"
+    PROJECT_VERSION: Optional[str] = "1.0.0"
 
     # Database Configuration Settings
-    POSTGRES_USER: str = os.getenv("POSTGRES_USER")
-    POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD")
-    POSTGRES_SERVER: str = os.getenv("POSTGRES_SERVER", "localhost")
-    POSTGRES_PORT: int = os.getenv("POSTGRES_PORT")
-    POSTGRES_DB: str = os.getenv("POSTGRES_DB")
+    POSTGRES_USER: Optional[str] = os.getenv("POSTGRES_USER")
+    POSTGRES_PASSWORD: Optional[str] = os.getenv("POSTGRES_PASSWORD")
+    POSTGRES_SERVER: Optional[str] = os.getenv("POSTGRES_SERVER", "localhost")
+    POSTGRES_PORT: Optional[str] = os.getenv("POSTGRES_PORT")
+    POSTGRES_DB: Optional[str] = os.getenv("POSTGRES_DB")
     DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}"
 
     # Email Credentials
-    MAIL_USERNAME: str = os.getenv("MAIL_USERNAME")
-    MAIL_PASSWORD: str = os.getenv("MAIL_PASSWORD")
-    MAIL_FROM: str = os.getenv("MAIL_FROM")
-    MAIL_PORT: int = os.getenv("MAIL_PORT")
-    MAIL_SERVER: str = os.getenv("MAIL_SERVER")
-    MAIL_FROM_NAME: str = os.getenv("MAIN_FROM_NAME")
+    MAIL_USERNAME: Optional[str] = os.getenv("MAIL_USERNAME")
+    MAIL_PASSWORD: Optional[str] = os.getenv("MAIL_PASSWORD")
+    MAIL_FROM: Optional[str] = os.getenv("MAIL_FROM")
+    MAIL_PORT: Optional[str] = os.getenv("MAIL_PORT")
+    MAIL_SERVER: Optional[str] = os.getenv("MAIL_SERVER")
+    MAIL_FROM_NAME: Optional[str] = os.getenv("MAIN_FROM_NAME")
 
     # Email Configurations
     conf = ConnectionConfig(
