@@ -1,6 +1,7 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, status
+from fastapi import (APIRouter, Depends, HTTPException, Query, UploadFile,
+                     status)
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from starlette.responses import JSONResponse
@@ -12,7 +13,7 @@ from .app.auth import AuthHandler
 
 models.Base.metadata.create_all(bind=database.engine)
 
-router = APIRouter()
+router = APIRouter(prefix="/api")
 
 
 def get_db():
@@ -33,7 +34,7 @@ auth_handler = (
 """
 
 
-@router.post("api/register", response_model=schemas.User, tags=["User CRUD"])
+@router.post("/register", response_model=schemas.User, tags=["User CRUD"])
 async def register(
     user: schemas.UserCreate,
     db: Session = Depends(get_db),
@@ -67,7 +68,7 @@ async def register(
         )
 
 
-@router.post("api/auth/login", tags=["Common APIs"])
+@router.post("/auth/login", tags=["Common APIs"])
 def login(
     form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ):
@@ -95,7 +96,7 @@ def login(
     return {"token": token, "token_type": "Bearer"}
 
 
-@router.get("api/profile", tags=["Common APIs"])
+@router.get("/profile", tags=["Common APIs"])
 def profile(username=Depends(auth_handler.auth_wrapper), db: Session = Depends(get_db)):
     current_user = auth_handler.get_user_by_username(db, username)
     username = current_user.username
@@ -107,7 +108,7 @@ def profile(username=Depends(auth_handler.auth_wrapper), db: Session = Depends(g
     )
 
 
-@router.patch("api/change-password", tags=["Common APIs"])
+@router.patch("/change-password", tags=["Common APIs"])
 async def change_password(
     reset_password: schemas.ChangePassword,
     username=Depends(auth_handler.auth_wrapper),
@@ -140,13 +141,13 @@ async def change_password(
 
 
 # Show all food of food menu
-@router.get("api/food-menu/", tags=["Food Menu"])
+@router.get("/food-menu/", tags=["Food Menu"])
 def get_food(db: Session = Depends(get_db)):
     return crud.get_food(db=db)
 
 
 # Show food by selected category
-@router.get("api/food-menu-by-category/", tags=["Food Menu"])
+@router.get("/food-menu-by-category/", tags=["Food Menu"])
 def get_food_category(category: List[str] = Query(None), db: Session = Depends(get_db)):
     result: List = []
     for each_category in category:
@@ -156,18 +157,25 @@ def get_food_category(category: List[str] = Query(None), db: Session = Depends(g
 
 
 # Add new food item
-@router.post("api/food-menu/", tags=["Food Menu"])
+@router.post("/food-menu/", tags=["Food Menu"])
 def create_food(new_food: schemas.FoodData, db: Session = Depends(get_db)):
     return crud.create_food(db=db, new_food=new_food)
 
 
 # Update food details
-@router.put("api/food-menu/{food_id}/", tags=["Food Menu"])
+@router.put("/food-menu/{food_id}/", tags=["Food Menu"])
 def update_food(food_id: int, food: schemas.FoodData, db: Session = Depends(get_db)):
     return crud.update_food(db=db, food=food, food_id=food_id)
 
 
 # Delete food
-@router.delete("api/food-menu/{food_id}/", tags=["Food Menu"])
+@router.delete("/food-menu/{food_id}/", tags=["Food Menu"])
 def delete_food(food_id: int, db: Session = Depends(get_db)):
     return crud.delete_food(db=db, food_id=food_id)
+
+
+# Add new order
+@router.post("/order/create/", response_model=schemas.Order, tags=["Order"])
+def create_order(order: schemas.OrderCreate, db: Session = Depends(get_db)):
+    return crud.create_order(db=db, order=order)
+
