@@ -83,4 +83,4 @@ app.include_router(admin.router)
 app.include_router(inventory.router)
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=5005)
+    uvicorn.run(app, host="127.0.0.1", port=5005)  # type: ignore
