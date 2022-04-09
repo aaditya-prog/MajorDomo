@@ -2,9 +2,16 @@ from datetime import date
 
 from pydantic import BaseModel, validator
 
+from schemas.food import Food
+
+
+class OrderItems(BaseModel):
+    food: Food
+    amount: int
+
 
 class OrderBase(BaseModel):
-    items: list[int]
+    items: list[OrderItems]
     table: int
 
     @validator('table')
