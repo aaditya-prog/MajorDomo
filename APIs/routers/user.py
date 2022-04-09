@@ -112,6 +112,17 @@ async def change_password(
     username=Depends(auth_handler.auth_wrapper),
     db: Session = Depends(get_db),
 ):
+    if not auth_handler.validate_password(reset_password.new_password):
+        raise HTTPException(
+            status_code=401,
+            detail=(
+                "Password not accepted. It must contain one uppercase "
+                "letter, one lowercase letter, one numeral, "
+                "one special character and should be longer "
+                "than 6 characters and shorter than 20 characters"
+            )
+        )
+
     current_user = auth_handler.get_user_by_username(db, username=username)
 
     password = current_user.password
