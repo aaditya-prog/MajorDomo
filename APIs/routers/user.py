@@ -19,9 +19,9 @@ def get_db():
         db.close()
 
 
-auth_handler = (
-    AuthHandler()
-)  # An instance of AuthHandler class from auth.py which contains authentication functions.
+# An instance of AuthHandler class
+# from auth.py which contains authentication functions.
+auth_handler = (AuthHandler())
 
 """
  API Endpoints for "user" submodule.
@@ -35,13 +35,18 @@ async def register(
     db: Session = Depends(get_db),
 ):
 
-    # Use "validate_password" function from "Auth_Handler" class to check password combinations, throw exception if
+    # Use "validate_password" function from "Auth_Handler" class
+    # to check password combinations, throw exception if
     # the combinations are bad.
     if not auth_handler.validate_password(user.password):
         raise HTTPException(
             status_code=401,
-            detail=f"Password not accepted. It must contain one uppercase letter, one lowercase letter, one numeral, "
-            f"one special character and should be longer than 6 characters and shorter than 20 characters",
+            detail=(
+                "Password not accepted. It must contain one uppercase "
+                "letter, one lowercase letter, one numeral, "
+                "one special character and should be longer "
+                "than 6 characters and shorter than 20 characters"
+            )
         )
 
     # Use "get_user_by_username" function to get user from the database.
@@ -51,7 +56,10 @@ async def register(
     if user_db:
         raise HTTPException(
             status_code=400,
-            detail=f"User with the username '{user.username}' already exists, pick another username.",
+            detail=(
+                f"User with the username '{user.username}' "
+                "already exists, pick another username."
+            )
         )
 
     # If username is unique, save details in database.
@@ -59,13 +67,17 @@ async def register(
         user = auth_handler.create_user(db=db, user=user)
         raise HTTPException(
             status_code=200,
-            detail=f"'{user.staff_type}' account with the username: '{user.username}' created successfully."
+            detail=(
+                f"'{user.staff_type}' account with the "
+                f"username: '{user.username}' created successfully."
+            )
         )
 
 
 @router.post("/auth/login", tags=["Common APIs"])
 def login(
-    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db)
 ):
     # Use "get_user_by_username" function to get user from the database.
     user_db = auth_handler.get_user_by_username(db, form_data.username)
@@ -79,7 +91,9 @@ def login(
         )
 
     password = user_db.password
-    verify_password = auth_handler.verify_password(form_data.password, password)
+    verify_password = auth_handler.verify_password(
+        form_data.password, password
+    )
     if not verify_password:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -92,14 +106,19 @@ def login(
 
 
 @router.get("/profile", tags=["Common APIs"])
-def profile(username=Depends(auth_handler.auth_wrapper), db: Session = Depends(get_db)):
+def profile(
+    username=Depends(auth_handler.auth_wrapper),
+    db: Session = Depends(get_db)
+):
     current_user = auth_handler.get_user_by_username(db, username)
     username = current_user.username
     full_name = current_user.full_name
     staff_type = current_user.staff_type
     return JSONResponse(
         status_code=200,
-        content={"username": username, "full_name": full_name, "Role": staff_type},
+        content={
+            "username": username, "full_name": full_name, "Role": staff_type
+        }
     )
 
 
@@ -112,7 +131,9 @@ async def change_password(
     current_user = auth_handler.get_user_by_username(db, username=username)
 
     password = current_user.password
-    verify_password = auth_handler.check_password(reset_password.old_password, password)
+    verify_password = auth_handler.check_password(
+        reset_password.old_password, password
+    )
 
     if not verify_password:
         raise HTTPException(
@@ -123,8 +144,13 @@ async def change_password(
 
     if reset_password.new_password != reset_password.confirm_password:
         raise HTTPException(
-            status_code=404, detail="New password and Confirm Password do not match"
+            status_code=404,
+            detail="New password and Confirm Password do not match"
         )
-    auth_handler.check_reset_password(reset_password.new_password, current_user.id, db)
+    auth_handler.check_reset_password(
+        reset_password.new_password, current_user.id, db
+    )
 
-    return {"message": f"Password updated for the user: {current_user.username}"}
+    return {
+        "message": f"Password updated for the user: {current_user.username}"
+    }
