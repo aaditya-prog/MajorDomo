@@ -5,6 +5,7 @@ from starlette.responses import JSONResponse
 
 from auth import AuthHandler
 from schemas.user import ChangePassword, User, UserCreate
+from schemas.token import Token
 
 import database
 
@@ -64,7 +65,7 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
         return db_user
 
 
-@router.post("/auth/login")
+@router.post("/auth/login", response_model=Token)
 def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
@@ -95,21 +96,14 @@ def login(
     return {"token": token, "token_type": "Bearer"}
 
 
-@router.get("/profile")
+@router.get("/profile", response_model=User)
 def profile(
     username=Depends(auth_handler.auth_wrapper),
     db: Session = Depends(get_db)
 ):
     current_user = auth_handler.get_user_by_username(db, username)
-    username = current_user.username
-    full_name = current_user.full_name
-    staff_type = current_user.staff_type
-    return JSONResponse(
-        status_code=200,
-        content={
-            "username": username, "full_name": full_name, "Role": staff_type
-        }
-    )
+
+    return current_user
 
 
 @router.patch("/change-password")
