@@ -3,11 +3,6 @@ from enum import Enum
 from pydantic import BaseModel
 
 
-class UserBase(BaseModel):
-    username: str
-    full_name: str
-
-
 class Staff(str, Enum):
     INVENTORY_STAFF = "Inventory Staff"
     KITCHEN_STAFF = "Kitchen Staff"
@@ -15,9 +10,14 @@ class Staff(str, Enum):
     ADMIN = "Admin"
 
 
+class UserBase(BaseModel):
+    username: str
+    full_name: str
+    staff: Staff
+
+
 class UserCreate(UserBase):
     password: str
-    staff: Staff
 
 
 class User(UserBase):
