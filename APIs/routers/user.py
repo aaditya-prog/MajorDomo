@@ -8,7 +8,7 @@ from schemas.user import ChangePassword, User, UserCreate
 
 import database
 
-router = APIRouter(prefix="/user")
+router = APIRouter(prefix="/user", tags=["User"])
 
 
 def get_db():
@@ -29,17 +29,8 @@ auth_handler = (AuthHandler())
 """
 
 
-@router.post(
-    "/register",
-    status_code=201,
-    response_model=User,
-    tags=["User CRUD"]
-)
-async def register(
-    user: UserCreate,
-    db: Session = Depends(get_db),
-):
-
+@router.post("/register", status_code=201, response_model=User)
+async def register(user: UserCreate, db: Session = Depends(get_db)):
     # Use "validate_password" function from "Auth_Handler" class
     # to check password combinations, throw exception if
     # the combinations are bad.
@@ -73,7 +64,7 @@ async def register(
         return db_user
 
 
-@router.post("/auth/login", tags=["Common APIs"])
+@router.post("/auth/login")
 def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
@@ -104,7 +95,7 @@ def login(
     return {"token": token, "token_type": "Bearer"}
 
 
-@router.get("/profile", tags=["Common APIs"])
+@router.get("/profile")
 def profile(
     username=Depends(auth_handler.auth_wrapper),
     db: Session = Depends(get_db)
@@ -121,7 +112,7 @@ def profile(
     )
 
 
-@router.patch("/change-password", tags=["Common APIs"])
+@router.patch("/change-password")
 async def change_password(
     reset_password: ChangePassword,
     username=Depends(auth_handler.auth_wrapper),
