@@ -2,8 +2,11 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from admin import admin
-from inventory import inventory
+from routers import food, inventory, order, user
+
+import database
+
+database.Base.metadata.create_all(bind=database.engine)
 
 description = """
 Based on the authentication levels, these API endpoints allow you to perform the following actions. ✔️
@@ -79,8 +82,10 @@ app.add_middleware(
 )
 
 # Including the routers of the submodules respectively.
-app.include_router(admin.router)
+app.include_router(user.router)
 app.include_router(inventory.router)
+app.include_router(order.router)
+app.include_router(food.router)
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=5005)
+    uvicorn.run(app, host="127.0.0.1", port=5005)  # type: ignore

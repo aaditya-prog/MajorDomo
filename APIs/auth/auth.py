@@ -6,7 +6,8 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
-from admin.app import models, schemas
+from models.user import User
+from schemas.user import UserCreate
 
 
 class AuthHandler:
@@ -25,7 +26,7 @@ class AuthHandler:
 
     def check_reset_password(self, new_password: str, id: int, db: Session):
         hashed_password = self.get_password_hash(new_password)
-        db_user_to_update = db.query(models.User).filter(models.User.id == id).first()
+        db_user_to_update = db.query(User).filter(User.id == id).first()
         db_user_to_update.hashed_password = hashed_password
         db.add(db_user_to_update)
         db.commit()
@@ -34,11 +35,11 @@ class AuthHandler:
 
     @staticmethod
     def get_user_by_username(db, username: str):
-        return db.query(models.User).filter(models.User.username == username).first()
+        return db.query(User).filter(User.username == username).first()
 
-    def create_user(self, db: Session, user: schemas.UserCreate):
+    def create_user(self, db: Session, user: UserCreate):
         hashed_password = self.get_password_hash(user.password)
-        db_user = models.User(
+        db_user = User(
             password=hashed_password,
             full_name=user.full_name,
             username=user.username,

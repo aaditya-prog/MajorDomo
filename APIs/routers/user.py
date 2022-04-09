@@ -1,19 +1,14 @@
-from typing import List
-
-from fastapi import (APIRouter, Depends, HTTPException, Query, UploadFile,
-                     status)
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from starlette.responses import JSONResponse
 
+from auth import AuthHandler
+from schemas.user import ChangePassword, User, UserCreate
+
 import database
 
-from .app import crud, models, schemas
-from .app.auth import AuthHandler
-
-models.Base.metadata.create_all(bind=database.engine)
-
-router = APIRouter(prefix="/api")
+router = APIRouter(prefix="/user")
 
 
 def get_db():
@@ -29,14 +24,14 @@ auth_handler = (
 )  # An instance of AuthHandler class from auth.py which contains authentication functions.
 
 """
- API Endpoints for "Admin" submodule.
+ API Endpoints for "user" submodule.
 
 """
 
 
-@router.post("/register", response_model=schemas.User, tags=["User CRUD"])
+@router.post("/register", response_model=User, tags=["User CRUD"])
 async def register(
-    user: schemas.UserCreate,
+    user: UserCreate,
     db: Session = Depends(get_db),
 ):
 
@@ -64,7 +59,7 @@ async def register(
         user = auth_handler.create_user(db=db, user=user)
         raise HTTPException(
             status_code=200,
-            detail=f"'{user.staff_type}' account with the username: '{user.username}' created successfully.",
+            detail=f"'{user.staff_type}' account with the username: '{user.username}' created successfully."
         )
 
 
@@ -110,7 +105,7 @@ def profile(username=Depends(auth_handler.auth_wrapper), db: Session = Depends(g
 
 @router.patch("/change-password", tags=["Common APIs"])
 async def change_password(
-    reset_password: schemas.ChangePassword,
+    reset_password: ChangePassword,
     username=Depends(auth_handler.auth_wrapper),
     db: Session = Depends(get_db),
 ):
@@ -133,49 +128,3 @@ async def change_password(
     auth_handler.check_reset_password(reset_password.new_password, current_user.id, db)
 
     return {"message": f"Password updated for the user: {current_user.username}"}
-
-
-"""
- API Endpoints for Food Menu CRUD Operations.
-"""
-
-
-# Show all food of food menu
-@router.get("/food-menu/", tags=["Food Menu"])
-def get_food(db: Session = Depends(get_db)):
-    return crud.get_food(db=db)
-
-
-# Show food by selected category
-@router.get("/food-menu-by-category/", tags=["Food Menu"])
-def get_food_category(category: List[str] = Query(None), db: Session = Depends(get_db)):
-    result: List = []
-    for each_category in category:
-        db_category = crud.get_food_by_category(db=db, category=each_category)
-        result = result + db_category
-    return result
-
-
-# Add new food item
-@router.post("/food-menu/", tags=["Food Menu"])
-def create_food(new_food: schemas.FoodData, db: Session = Depends(get_db)):
-    return crud.create_food(db=db, new_food=new_food)
-
-
-# Update food details
-@router.put("/food-menu/{food_id}/", tags=["Food Menu"])
-def update_food(food_id: int, food: schemas.FoodData, db: Session = Depends(get_db)):
-    return crud.update_food(db=db, food=food, food_id=food_id)
-
-
-# Delete food
-@router.delete("/food-menu/{food_id}/", tags=["Food Menu"])
-def delete_food(food_id: int, db: Session = Depends(get_db)):
-    return crud.delete_food(db=db, food_id=food_id)
-
-
-# Add new order
-@router.post("/order/create/", response_model=schemas.Order, tags=["Order"])
-def create_order(order: schemas.OrderCreate, db: Session = Depends(get_db)):
-    return crud.create_order(db=db, order=order)
-

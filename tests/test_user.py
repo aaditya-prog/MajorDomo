@@ -1,8 +1,8 @@
 from fastapi.testclient import TestClient
 
-from ..admin import router
+from APIs.routers import user
 
-client = TestClient(router)
+client = TestClient(user.router)
 
 
 def test_register():

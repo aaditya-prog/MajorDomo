@@ -1,4 +1,3 @@
-
 from sqlalchemy import (Column, Float, Integer,
                         String, func)
 

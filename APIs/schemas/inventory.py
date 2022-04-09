@@ -1,9 +1,5 @@
 from pydantic import BaseModel
 
-"""
-    Inventory schema
-"""
-
 
 class InventoryData(BaseModel):
     item_name: str
