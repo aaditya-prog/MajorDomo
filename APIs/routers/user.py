@@ -29,7 +29,12 @@ auth_handler = (AuthHandler())
 """
 
 
-@router.post("/register", response_model=User, tags=["User CRUD"])
+@router.post(
+    "/register",
+    status_code=201,
+    response_model=User,
+    tags=["User CRUD"]
+)
 async def register(
     user: UserCreate,
     db: Session = Depends(get_db),
@@ -64,14 +69,8 @@ async def register(
 
     # If username is unique, save details in database.
     if user_db is None:
-        user = auth_handler.create_user(db=db, user=user)
-        raise HTTPException(
-            status_code=200,
-            detail=(
-                f"'{user.staff_type}' account with the "
-                f"username: '{user.username}' created successfully."
-            )
-        )
+        db_user = auth_handler.create_user(db=db, user=user)
+        return db_user
 
 
 @router.post("/auth/login", tags=["Common APIs"])
