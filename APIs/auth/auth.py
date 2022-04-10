@@ -50,7 +50,7 @@ class AuthHandler:
             return payload["sub"]
         except jwt.ExpiredSignatureError:
             raise HTTPException(status_code=401, detail="Token has expired")
-        except jwt.InvalidTokenError as e:
+        except jwt.InvalidTokenError:
             raise HTTPException(status_code=401, detail="Invalid token")
 
     def auth_wrapper(
