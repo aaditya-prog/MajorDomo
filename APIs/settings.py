@@ -1,4 +1,6 @@
 import os
+
+from functools import lru_cache
 from pathlib import Path
 from typing import Optional
 
@@ -45,3 +47,9 @@ class Settings(BaseSettings):
         USE_CREDENTIALS=True,
         TEMPLATE_FOLDER="./templates/",
     )
+
+
+# Using the @lru_cache() decorator on top, the Settings object will be created only once, the first time it's called.
+@lru_cache()
+def get_settings():
+    return Settings()
