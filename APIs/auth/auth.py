@@ -38,13 +38,8 @@ class AuthHandler:
         return db.query(User).filter(User.username == username).first()
 
     def create_user(self, db: Session, user: UserCreate):
-        hashed_password = self.get_password_hash(user.password)
-        db_user = User(
-            password=hashed_password,
-            full_name=user.full_name,
-            username=user.username,
-            staff_type=user.staff,
-        )
+        user.password = self.get_password_hash(user.password)
+        db_user = User(**user.dict())
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
