@@ -4,10 +4,6 @@ import jwt
 from fastapi import HTTPException, Security
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from passlib.context import CryptContext
-from sqlalchemy.orm import Session
-
-from models.user import User
-from schemas.user import UserCreate
 
 
 class AuthHandler:
@@ -23,27 +19,6 @@ class AuthHandler:
 
     def check_password(self, password, hash_password) -> str:
         return self.pwd_context.verify(password, hash_password)
-
-    def check_reset_password(self, new_password: str, id: int, db: Session):
-        hashed_password = self.get_password_hash(new_password)
-        db_user_to_update = db.query(User).filter(User.id == id).first()
-        db_user_to_update.hashed_password = hashed_password
-        db.add(db_user_to_update)
-        db.commit()
-        db.refresh(db_user_to_update)
-        return db_user_to_update
-
-    @staticmethod
-    def get_user_by_username(db, username: str):
-        return db.query(User).filter(User.username == username).first()
-
-    def create_user(self, db: Session, user: UserCreate):
-        user.password = self.get_password_hash(user.password)
-        db_user = User(**user.dict())
-        db.add(db_user)
-        db.commit()
-        db.refresh(db_user)
-        return db_user
 
     # Function to encode the JWT Token
     def encode_token(self, user_id):
@@ -64,7 +39,9 @@ class AuthHandler:
         except jwt.InvalidTokenError as e:
             raise HTTPException(status_code=401, detail="Invalid token")
 
-    def auth_wrapper(self, auth: HTTPAuthorizationCredentials = Security(security)):
+    def auth_wrapper(
+        self, auth: HTTPAuthorizationCredentials = Security(security)
+    ):
         return self.decode_token(auth.credentials)
 
     # Function to validate the password
