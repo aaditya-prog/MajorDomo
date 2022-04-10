@@ -1,9 +1,23 @@
 from datetime import datetime, timedelta
 
 import jwt
-from fastapi import HTTPException, Security
+from fastapi import Depends, HTTPException, Security
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from passlib.context import CryptContext
+from sqlalchemy.orm import Session
+
+import database
+
+from crud.user import get_user_by_username
+from models.user import User as ModelUser
+
+
+def get_db():
+    db = database.SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 class AuthHandler:
@@ -40,9 +54,15 @@ class AuthHandler:
             raise HTTPException(status_code=401, detail="Invalid token")
 
     def auth_wrapper(
-        self, auth: HTTPAuthorizationCredentials = Security(security)
+        self,
+        auth: HTTPAuthorizationCredentials = Security(security),
+        db: Session = Depends(get_db)
     ):
-        return self.decode_token(auth.credentials)
+        username = self.decode_token(auth.credentials)
+
+        user: ModelUser = get_user_by_username(db, username)
+
+        return user
 
     # Function to validate the password
     @staticmethod
