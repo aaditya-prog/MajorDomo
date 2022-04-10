@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from auth import AuthHandler
 from crud.user import create_user, get_user_by_username, reset_password
+from models.user import User as ModelUser
 from schemas.user import ChangePassword, User, UserCreate
 from schemas.token import Token
 
@@ -46,25 +47,10 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
             )
         )
 
-    # Use "get_user_by_username" function to get user from the database.
-    user_db = get_user_by_username(db, username=user.username)
-
-    # If the entered username exists in db, raise exception.
-    if user_db:
-        raise HTTPException(
-            status_code=400,
-            detail=(
-                f"User with the username '{user.username}' "
-                "already exists, pick another username."
-            )
-        )
-
-    # If username is unique, save details in database.
-    if user_db is None:
-        user_dict = user.dict()
-        user_dict["password"] = auth_handler.get_password_hash(user.password)
-        db_user = create_user(db, user_dict)
-        return db_user
+    user_dict = user.dict()
+    user_dict["password"] = auth_handler.get_password_hash(user.password)
+    db_user = create_user(db, user_dict)
+    return db_user
 
 
 @router.post("/auth/login", response_model=Token)
@@ -100,18 +86,15 @@ def login(
 
 @router.get("/profile", response_model=User)
 def profile(
-    username=Depends(auth_handler.auth_wrapper),
-    db: Session = Depends(get_db)
+    current_user: ModelUser = Depends(auth_handler.auth_wrapper)
 ):
-    current_user = get_user_by_username(db, username)
-
     return current_user
 
 
 @router.patch("/change-password")
 async def change_password(
     passwords: ChangePassword,
-    username=Depends(auth_handler.auth_wrapper),
+    current_user: ModelUser = Depends(auth_handler.auth_wrapper),
     db: Session = Depends(get_db),
 ):
     if not auth_handler.validate_password(passwords.new_password):
@@ -125,9 +108,8 @@ async def change_password(
             )
         )
 
-    current_user = get_user_by_username(db, username=username)
-
     password = current_user.password
+
     verify_password = auth_handler.check_password(
         passwords.old_password, password
     )
@@ -147,7 +129,8 @@ async def change_password(
     new_password_hash = auth_handler.get_password_hash(
         passwords.new_password
     )
-    reset_password(db, current_user.id, new_password_hash)
+    user = User.from_orm(current_user)
+    reset_password(db, user.id, new_password_hash)
 
     return {
         "message": f"Password updated for the user: {current_user.username}"
