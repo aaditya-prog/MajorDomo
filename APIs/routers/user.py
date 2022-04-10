@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from auth import AuthHandler
 from crud.user import create_user, get_user_by_username, reset_password
 from models.user import User as ModelUser
-from schemas.user import ChangePassword, User, UserCreate
+from schemas.user import ChangePassword, Staff, User, UserCreate
 from schemas.token import Token
 
 import database
@@ -32,7 +32,17 @@ auth_handler = (AuthHandler())
 
 
 @router.post("/register", status_code=201, response_model=User)
-async def register(user: UserCreate, db: Session = Depends(get_db)):
+async def register(
+    user: UserCreate,
+    current_user: ModelUser = Depends(auth_handler.auth_wrapper),
+    db: Session = Depends(get_db)
+):
+    if current_user.staff != Staff.ADMIN:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Unauthorized to perform this action"
+        )
+
     # Use "validate_password" function from "Auth_Handler" class
     # to check password combinations, throw exception if
     # the combinations are bad.
