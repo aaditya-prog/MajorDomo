@@ -12,3 +12,6 @@ class Food(FoodData):
 
     class Config:
         orm_mode = True
+
+
+FoodByCategory = dict[str, list[Food]]
