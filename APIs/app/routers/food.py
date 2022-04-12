@@ -1,12 +1,18 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
+from auth.permissions import ensure_is_admin
 from crud import food as food_crud
 from schemas.food import Food, FoodData, FoodByCategory
 
 import database
 
 router = APIRouter(prefix="/food", tags=["Food Menu"])
+
+# at the end of the file, admin_router will be included in router
+admin_router = APIRouter(
+    dependencies=[Depends(ensure_is_admin)]
+)
 
 """
  API Endpoints for Food Menu CRUD Operations.
@@ -42,18 +48,21 @@ def get_food_category(
 
 
 # Add new food item
-@router.post("/menu/", response_model=Food)
+@admin_router.post("/menu/", response_model=Food)
 def create_food(new_food: FoodData, db: Session = Depends(get_db)):
     return food_crud.create_food(db=db, new_food=new_food)
 
 
 # Update food details
-@router.put("/menu/{food_id}/", response_model=Food)
+@admin_router.put("/menu/{food_id}/", response_model=Food)
 def update_food(food_id: int, food: FoodData, db: Session = Depends(get_db)):
     return food_crud.update_food(db=db, food=food, food_id=food_id)
 
 
 # Delete food
-@router.delete("/menu/{food_id}/")
+@admin_router.delete("/menu/{food_id}/")
 def delete_food(food_id: int, db: Session = Depends(get_db)):
     return food_crud.delete_food(db=db, food_id=food_id)
+
+
+router.include_router(admin_router)

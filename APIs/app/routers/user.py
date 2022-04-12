@@ -3,9 +3,10 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from auth import AuthHandler
+from auth.permissions import ensure_is_admin
 from crud.user import create_user, get_user_by_username, reset_password
 from models.user import User as ModelUser
-from schemas.user import ChangePassword, Staff, User, UserCreate
+from schemas.user import ChangePassword, User, UserCreate
 from schemas.token import Token
 
 import database
@@ -21,34 +22,25 @@ def get_db():
         db.close()
 
 
-# An instance of AuthHandler class
-# from auth.py which contains authentication functions.
-auth_handler = (AuthHandler())
-
 """
  API Endpoints for "user" submodule.
 
 """
 
 
-@router.post("/register", status_code=201, response_model=User)
-async def register(
-    user: UserCreate,
-    current_user: ModelUser = Depends(auth_handler.auth_wrapper),
-    db: Session = Depends(get_db)
-):
-    if current_user.staff != Staff.ADMIN:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Unauthorized to perform this action"
-        )
-
+@router.post(
+    "/register",
+    status_code=status.HTTP_201_CREATED,
+    response_model=User,
+    dependencies=[Depends(ensure_is_admin)]
+)
+async def register(user: UserCreate, db: Session = Depends(get_db)):
     # Use "validate_password" function from "Auth_Handler" class
     # to check password combinations, throw exception if
     # the combinations are bad.
-    if not auth_handler.validate_password(user.password):
+    if not AuthHandler.validate_password(user.password):
         raise HTTPException(
-            status_code=401,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=(
                 "Password not accepted. It must contain one uppercase "
                 "letter, one lowercase letter, one numeral, "
@@ -58,7 +50,7 @@ async def register(
         )
 
     user_dict = user.dict()
-    user_dict["password"] = auth_handler.get_password_hash(user.password)
+    user_dict["password"] = AuthHandler.get_password_hash(user.password)
     db_user = create_user(db, user_dict)
     return db_user
 
@@ -80,7 +72,7 @@ def login(
         )
 
     password = user_db.password
-    verify_password = auth_handler.verify_password(
+    verify_password = AuthHandler.verify_password(
         form_data.password, password
     )
     if not verify_password:
@@ -90,13 +82,13 @@ def login(
             headers={"WWW-Authenticate": "Bearer"},
         )
     username = user_db.username
-    token = auth_handler.encode_token(username)
+    token = AuthHandler.encode_token(username)
     return {"token": token, "token_type": "Bearer"}
 
 
 @router.get("/profile", response_model=User)
 def profile(
-    current_user: ModelUser = Depends(auth_handler.auth_wrapper)
+    current_user: ModelUser = Depends(AuthHandler.auth_wrapper)
 ):
     return current_user
 
@@ -104,12 +96,12 @@ def profile(
 @router.patch("/change-password")
 async def change_password(
     passwords: ChangePassword,
-    current_user: ModelUser = Depends(auth_handler.auth_wrapper),
+    current_user: ModelUser = Depends(AuthHandler.auth_wrapper),
     db: Session = Depends(get_db),
 ):
-    if not auth_handler.validate_password(passwords.new_password):
+    if not AuthHandler.validate_password(passwords.new_password):
         raise HTTPException(
-            status_code=401,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=(
                 "Password not accepted. It must contain one uppercase "
                 "letter, one lowercase letter, one numeral, "
@@ -120,7 +112,7 @@ async def change_password(
 
     password = current_user.password
 
-    verify_password = auth_handler.check_password(
+    verify_password = AuthHandler.check_password(
         passwords.old_password, password
     )
 
@@ -133,10 +125,10 @@ async def change_password(
 
     if passwords.new_password != passwords.confirm_password:
         raise HTTPException(
-            status_code=404,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail="New password and Confirm Password do not match"
         )
-    new_password_hash = auth_handler.get_password_hash(
+    new_password_hash = AuthHandler.get_password_hash(
         passwords.new_password
     )
     user = User.from_orm(current_user)
