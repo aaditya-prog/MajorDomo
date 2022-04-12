@@ -37,7 +37,7 @@ def create_user(db: Session, user_dict: dict):
 
     if existing_user:
         raise HTTPException(
-            status_code=status.HTTP_406_NOT_ACCEPTABLE,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"User with the username '{username}' "
             "already exists, pick another username."
         )

@@ -28,10 +28,10 @@ def get_existing_food(db: Session, food_id: int):
 def ensure_food_does_not_exist(db: Session, food_name: str):
     food_same = db.query(Food).filter(
         func.lower(Food.food_name) == food_name.lower()
-    )
+    ).first()
     if food_same:
         raise HTTPException(
-            status_code=status.HTTP_406_NOT_ACCEPTABLE,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail="Food already present"
         )
 
