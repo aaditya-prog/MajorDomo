@@ -25,40 +25,46 @@ class AuthHandler:
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
     secret = "SECRET"
 
-    def get_password_hash(self, password):
-        return self.pwd_context.hash(password)
+    @classmethod
+    def get_password_hash(cls, password):
+        return cls.pwd_context.hash(password)
 
-    def verify_password(self, plain_password, hashed_password):
-        return self.pwd_context.verify(plain_password, hashed_password)
+    @classmethod
+    def verify_password(cls, plain_password, hashed_password):
+        return cls.pwd_context.verify(plain_password, hashed_password)
 
-    def check_password(self, password, hash_password) -> str:
-        return self.pwd_context.verify(password, hash_password)
+    @classmethod
+    def check_password(cls, password, hash_password) -> str:
+        return cls.pwd_context.verify(password, hash_password)
 
     # Function to encode the JWT Token
-    def encode_token(self, user_id):
+    @classmethod
+    def encode_token(cls, user_id):
         payload = {
             "exp": datetime.utcnow() + timedelta(days=0, hours=12),
             "iat": datetime.utcnow(),
             "sub": user_id,
         }
-        return jwt.encode(payload, self.secret, algorithm="HS256")
+        return jwt.encode(payload, cls.secret, algorithm="HS256")
 
     # Function to decode the JWT Token
-    def decode_token(self, token):
+    @classmethod
+    def decode_token(cls, token):
         try:
-            payload = jwt.decode(token, self.secret, algorithms=["HS256"])
+            payload = jwt.decode(token, cls.secret, algorithms=["HS256"])
             return payload["sub"]
         except jwt.ExpiredSignatureError:
             raise HTTPException(status_code=401, detail="Token has expired")
         except jwt.InvalidTokenError:
             raise HTTPException(status_code=401, detail="Invalid token")
 
+    @classmethod
     def auth_wrapper(
-        self,
+        cls,
         auth: HTTPAuthorizationCredentials = Security(security),
         db: Session = Depends(get_db)
     ):
-        username = self.decode_token(auth.credentials)
+        username = cls.decode_token(auth.credentials)
 
         user: ModelUser = get_user_by_username(db, username)
 
