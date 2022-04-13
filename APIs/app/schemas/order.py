@@ -1,4 +1,5 @@
 from datetime import date
+from enum import Enum
 
 from pydantic import BaseModel, validator
 
@@ -25,6 +26,15 @@ class OrderCreate(OrderBase):
     pass
 
 
+class Status(str, Enum):
+    PENDING = "Pending"
+    RECIEVED = "Recieved"
+    PREPARED = "Prepared"
+    PAID = "Paid"
+    CANCELLED = "Cancelled"
+
+
 class Order(OrderBase):
     order_id: int
     order_date: date
+    status: Status
