@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import HTTPException, status
 from sqlalchemy import and_
 from sqlalchemy.orm import Session
@@ -43,8 +44,12 @@ def ensure_required_quatity_is_available(db: Session, item_id: int, q: int):
 
 
 # Get all items from the inventory.
-def get_items(db: Session):
-    return db.query(Inventory).all()
+def get_items(
+    db: Session,
+    offset: Optional[int] = 0,
+    limit: Optional[int] = 20
+):
+    return db.query(Inventory).offset(offset).limit(limit).all()
 
 
 # Get item by category.

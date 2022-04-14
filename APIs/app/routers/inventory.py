@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from schemas.inventory import InventoryData, Item, ItemByCategory
@@ -32,8 +33,12 @@ def get_db():
 
 # Show all items in the inventory.
 @router.get("/item-list/", response_model=list[Item])
-def get_item(db: Session = Depends(get_db)):
-    return inventory_crud.get_items(db=db)
+def get_item(
+    offset: Optional[int],
+    limit: Optional[int] = 20,
+    db: Session = Depends(get_db)
+):
+    return inventory_crud.get_items(db=db, offset=offset, limit=limit)
 
 
 # Show items by selected category
