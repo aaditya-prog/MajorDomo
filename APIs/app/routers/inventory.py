@@ -2,12 +2,17 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from schemas.inventory import InventoryData, Item, ItemByCategory
 
+from auth.permissions import ensure_is_inventory_staff
 from crud import inventory as inventory_crud
 
 import database
 
 # An instance of APIRouter.
-router = APIRouter(prefix="/inventory", tags=["Inventory"])
+router = APIRouter(
+    prefix="/inventory",
+    tags=["Inventory"],
+    dependencies=[Depends(ensure_is_inventory_staff)]
+)
 
 
 # Creating a dependency function to make connection with the database.
