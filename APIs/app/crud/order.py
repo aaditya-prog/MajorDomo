@@ -82,3 +82,9 @@ def cancel_order(db: Session, order_id: int):
         db_order.status = Status.CANCELLED  # type: ignore
         db.commit()
         return {"Order cancelled"}
+
+
+def get_orders(db: Session, offset: int, limit: int):
+    db_orders = db.query(Orders).offset(offset).limit(int).all()
+
+    return db_orders

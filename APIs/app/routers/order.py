@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from auth.permissions import ensure_can_view_order
 from crud import order as order_crud
 from schemas.order import Order, OrderCreate, OrderUpdate
 
@@ -35,3 +36,14 @@ def edit_order(
 @router.delete("/")
 def cancel_order(order_id, db: Session = Depends(get_db)):
     return order_crud.cancel_order(db=db, order_id=order_id)
+
+
+@router.get(
+    "/",
+    response_model=list[Order],
+    dependencies=[Depends(ensure_can_view_order)]
+)
+def view_all_orders(
+    offset: int = 0, limit: int = 20, db: Session = Depends(get_db)
+):
+    return order_crud.get_orders(db, offset, limit)
