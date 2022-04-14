@@ -36,3 +36,12 @@ def ensure_is_inventory_staff(
         raise unauthorized_error
 
     return current_user
+
+
+def ensure_is_kitchen_staff(
+    current_user: ModelUser = Depends(AuthHandler.auth_wrapper)
+):
+    if current_user != Staff.KITCHEN_STAFF:
+        raise unauthorized_error
+
+    return current_user

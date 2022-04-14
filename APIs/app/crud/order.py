@@ -72,6 +72,27 @@ def update_order(db: Session, order_id: int, order: OrderUpdate):
         return db_order
 
 
+def update_order_status(db: Session, order_id: int, status_: str):
+    db_order = get_existing_order(db, order_id)
+    ensure_order_is_not_cancelled(db_order)
+    ensure_order_is_not_paid_for(db_order)
+    if status_ == Status.RECIEVED:
+        ensure_order_has_not_already_been_received(db_order)
+
+    if status_ == Status.PREPARED:
+        ensure_order_is_not_already_prepared(db_order)
+        if db_order.status != Status.RECIEVED:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Order is has not been received"
+            )
+
+    db_order.status = status_  # type: ignore
+    db.commit()
+    db.refresh(db_order)
+    return db_order
+
+
 def cancel_order(db: Session, order_id: int):
     db_order = get_existing_order(db, order_id)
     ensure_order_is_not_cancelled(db_order)

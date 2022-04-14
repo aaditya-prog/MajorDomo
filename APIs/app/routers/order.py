@@ -2,7 +2,10 @@ from typing import Optional
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from auth.permissions import ensure_cashier_or_kitchen_staff
+from auth.permissions import (
+    ensure_cashier_or_kitchen_staff,
+    ensure_is_kitchen_staff
+)
 from crud import order as order_crud
 from schemas.order import Order, OrderCreate, OrderUpdate
 
@@ -51,3 +54,13 @@ def view_all_orders(
     db: Session = Depends(get_db)
 ):
     return order_crud.get_orders(db, offset, limit, status)
+
+
+@router.patch(
+    "/{order_id}/{status_}",
+    dependencies=Depends(ensure_is_kitchen_staff)
+)
+def update_order_status_by_staff(
+    order_id: int, status_: str, db: Session = Depends(get_db)
+):
+    return order_crud.update_order_status(db, order_id, status_)
