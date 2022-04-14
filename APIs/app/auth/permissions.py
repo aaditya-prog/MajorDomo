@@ -27,3 +27,12 @@ def ensure_can_view_order(
         raise unauthorized_error
 
     return current_user
+
+
+def ensure_is_inventory_staff(
+    current_user: ModelUser = Depends(AuthHandler.auth_wrapper)
+):
+    if current_user != Staff.INVENTORY_STAFF:
+        raise unauthorized_error
+
+    return current_user
