@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
@@ -44,6 +45,9 @@ def cancel_order(order_id, db: Session = Depends(get_db)):
     dependencies=[Depends(ensure_can_view_order)]
 )
 def view_all_orders(
-    offset: int = 0, limit: int = 20, db: Session = Depends(get_db)
+    status: Optional[str] = None,
+    offset: Optional[int] = 0,
+    limit: Optional[int] = 20,
+    db: Session = Depends(get_db)
 ):
-    return order_crud.get_orders(db, offset, limit)
+    return order_crud.get_orders(db, offset, limit, status)

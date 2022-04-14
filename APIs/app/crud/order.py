@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional, Union
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -84,7 +84,24 @@ def cancel_order(db: Session, order_id: int):
         return {"Order cancelled"}
 
 
-def get_orders(db: Session, offset: int, limit: int):
-    db_orders = db.query(Orders).offset(offset).limit(int).all()
+def get_orders(
+    db: Session,
+    offset: Optional[int] = 0,
+    limit: Optional[int] = 20,
+    status_: Optional[str] = None
+):
+    if status_:
+        if status_ in (
+            Status.CANCELLED, Status.PAID, Status.PENDING,
+            Status.PREPARED, Status.RECIEVED
+        ):
+            db_orders = db.query(Orders).filter(
+                Orders.status == status_).offset(offset).limit(limit).all()
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"{status_} is not a valid status"
+            )
+    db_orders = db.query(Orders).offset(offset).limit(limit).all()
 
     return db_orders
