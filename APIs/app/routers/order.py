@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from crud import order as order_crud
-from schemas.order import Order, OrderCreate
+from schemas.order import Order, OrderCreate, OrderUpdate
 
 import database
 
@@ -21,6 +21,15 @@ def get_db():
 @router.post("/", response_model=Order)
 def create_order(order: OrderCreate, db: Session = Depends(get_db)):
     return order_crud.create_order(db=db, order=order)
+
+
+@router.patch("/{order_id}", response_model=Order)
+def edit_order(
+    order_id: int, order_update: OrderUpdate, db: Session = Depends(get_db)
+):
+    return order_crud.update_order(
+        db=db, order_id=order_id, order=order_update
+    )
 
 
 @router.delete("/")

@@ -26,6 +26,10 @@ class OrderCreate(OrderBase):
     pass
 
 
+class OrderUpdate(BaseModel):
+    items: list[OrderItems]
+
+
 class Status(str, Enum):
     PENDING = "Pending"
     RECIEVED = "Recieved"
