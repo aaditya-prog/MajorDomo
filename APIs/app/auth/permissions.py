@@ -20,7 +20,7 @@ def ensure_is_admin(
     return current_user
 
 
-def ensure_can_view_order(
+def ensure_cashier_or_kitchen_staff(
     current_user: ModelUser = Depends(AuthHandler.auth_wrapper)
 ):
     if current_user.staff not in (Staff.CASHIER, Staff.KITCHEN_STAFF):

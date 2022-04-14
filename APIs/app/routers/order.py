@@ -2,7 +2,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from auth.permissions import ensure_can_view_order
+from auth.permissions import ensure_cashier_or_kitchen_staff
 from crud import order as order_crud
 from schemas.order import Order, OrderCreate, OrderUpdate
 
@@ -42,7 +42,7 @@ def cancel_order(order_id, db: Session = Depends(get_db)):
 @router.get(
     "/",
     response_model=list[Order],
-    dependencies=[Depends(ensure_can_view_order)]
+    dependencies=[Depends(ensure_cashier_or_kitchen_staff)]
 )
 def view_all_orders(
     status: Optional[str] = None,
