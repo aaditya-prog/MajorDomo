@@ -2,8 +2,8 @@ from fastapi import HTTPException, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from models.food import Food
-from schemas.food import FoodData
+from ..models.food import Food
+from ..schemas.food import FoodData
 
 """
   Food operations

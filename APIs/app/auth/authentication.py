@@ -6,10 +6,10 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
-import database
+from ..config import database
 
-from crud.user import get_user_by_username
-from models.user import User as ModelUser
+from ..crud.user import get_user_by_username
+from ..models.user import User as ModelUser
 
 
 def get_db():
