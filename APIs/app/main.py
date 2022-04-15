@@ -4,10 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from routers import food, inventory, order, user
 
-import database
-
-database.Base.metadata.create_all(bind=database.engine)
-
 description = """
 Based on the authentication levels, these API endpoints allow you to perform the following actions. ✔️
 

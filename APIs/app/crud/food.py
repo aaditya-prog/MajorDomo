@@ -1,4 +1,4 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
@@ -13,21 +13,27 @@ from schemas.food import FoodData
 
 # Check food exist or not
 # If not, raise exception
-def exist_food(db: Session, food_id: int):
+def get_existing_food(db: Session, food_id: int):
     food_exist = db.query(Food).filter(Food.food_id == food_id).first()
     if food_exist is None:
         raise HTTPException(
-            status_code=404, detail="The requested food item doesn't exist in the menu."
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="The requested food item doesn't exist in the menu."
         )
+
+    return food_exist
 
 
 # Check same food present or not
-def same_food(db: Session, food_name: str):
+def ensure_food_does_not_exist(db: Session, food_name: str):
     food_same = db.query(Food).filter(
         func.lower(Food.food_name) == food_name.lower()
-    )
+    ).first()
     if food_same:
-        raise HTTPException(status_code=404, detail="Food already present")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Food already present"
+        )
 
 
 # Get all food
@@ -42,7 +48,7 @@ def get_food_by_category(db: Session, category: str):
 
 # Add food
 def create_food(db: Session, new_food: FoodData):
-    same_food(db=db, food_name=new_food.food_name)
+    ensure_food_does_not_exist(db=db, food_name=new_food.food_name)
 
     db_food = Food(**new_food.dict())
     db.add(db_food)
@@ -53,8 +59,7 @@ def create_food(db: Session, new_food: FoodData):
 
 # Update food
 def update_food(db: Session, food: FoodData, food_id: int):
-    exist_food(db=db, food_id=food_id)
-    db_food = db.query(Food).filter(Food.food_id == food_id).first()
+    db_food = get_existing_food(db=db, food_id=food_id)
     db_food.food_name = food.food_name
     db_food.food_price = food.food_price
     db_food.food_category = food.food_category
@@ -66,8 +71,7 @@ def update_food(db: Session, food: FoodData, food_id: int):
 
 # Delete food
 def delete_food(db: Session, food_id: int):
-    exist_food(db=db, food_id=food_id)
-    food_remove = db.query(Food).filter(Food.food_id == food_id).first()
+    food_remove = get_existing_food(db=db, food_id=food_id)
     db.delete(food_remove)
     db.commit()
     return {"Food removed"}

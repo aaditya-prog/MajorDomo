@@ -13,3 +13,6 @@ class Item(InventoryData):
 
     class Config:
         orm_mode = True
+
+
+ItemByCategory = dict[str, list[Item]]
