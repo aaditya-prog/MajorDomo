@@ -58,7 +58,7 @@ def view_all_orders(
 
 @router.patch(
     "/{order_id}/{status_}",
-    dependencies=Depends(ensure_is_kitchen_staff)
+    dependencies=[Depends(ensure_is_kitchen_staff)]
 )
 def update_order_status_by_staff(
     order_id: int, status_: str, db: Session = Depends(get_db)
