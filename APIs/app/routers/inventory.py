@@ -6,9 +6,9 @@ from ..auth.permissions import ensure_is_inventory_staff
 from ..config import database
 from ..crud import inventory as inventory_crud
 from ..schemas.inventory import InventoryData, Item, ItemByCategory
-from fastapi import FastAPI
+
 # An instance of APIRouter.
-router = FastAPI(
+router = APIRouter(
     prefix="/inventory",
     tags=["Inventory"],
     dependencies=[Depends(ensure_is_inventory_staff)]
