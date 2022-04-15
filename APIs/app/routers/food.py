@@ -5,9 +5,9 @@ from ..auth.permissions import ensure_is_admin
 from ..config import database
 from ..crud import food as food_crud
 from ..schemas.food import Food, FoodData, FoodByCategory
+from fastapi import FastAPI
 
-
-router = APIRouter(prefix="/food", tags=["Food Menu"])
+router = FastAPI(prefix="/food", tags=["Food Menu"])
 
 # at the end of the file, admin_router will be included in router
 admin_router = APIRouter(

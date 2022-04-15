@@ -24,6 +24,8 @@ fastapi-mail = "^1.0.1"
 mypy = "^0.931"
 alembic = "^1.7.6"
 Pillow = "^9.0.1"
+async-exit-stack = "^1.0.1"
+async_generator = "^1.10"
 
 [tool.poetry.dev-dependencies]
 

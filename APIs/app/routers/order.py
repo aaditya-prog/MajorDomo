@@ -1,5 +1,5 @@
 from typing import Optional
-from fastapi import APIRouter, Depends
+from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 
 from ..auth.permissions import (
@@ -11,7 +11,7 @@ from ..crud import order as order_crud
 from ..schemas.order import Order, OrderCreate, OrderUpdate
 
 
-router = APIRouter(prefix="/orders", tags=["Order"])
+router = FastAPI(prefix="/orders", tags=["Order"])
 
 
 def get_db():
