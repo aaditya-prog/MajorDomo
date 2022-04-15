@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import Optional
 
 from dotenv import load_dotenv
-from fastapi_mail import ConnectionConfig
 from pydantic import BaseSettings, EmailStr
 
 # Utilizing dotenv to load environment variables from the OS.
