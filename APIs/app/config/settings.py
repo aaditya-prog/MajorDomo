@@ -9,7 +9,7 @@ from fastapi_mail import ConnectionConfig
 from pydantic import BaseSettings, EmailStr
 
 # Utilizing dotenv to load environment variables from the OS.
-env_path = Path(".env")
+env_path = os.getcwd() + "\\app\\.env"
 load_dotenv(dotenv_path=env_path)
 
 
@@ -48,7 +48,7 @@ class Settings(BaseSettings):
         MAIL_TLS=True,
         MAIL_SSL=False,
         USE_CREDENTIALS=True,
-        TEMPLATE_FOLDER=Path("./templates")
+        TEMPLATE_FOLDER=Path("app/templates")
     )
 
 

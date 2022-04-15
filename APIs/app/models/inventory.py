@@ -2,7 +2,7 @@ from sqlalchemy import (Column, Float, Integer,
                         String, func)
 
 
-from database import Base
+from ..config.database import Base
 
 
 class Inventory(Base):

@@ -1,12 +1,11 @@
 from typing import Optional
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
-from schemas.inventory import InventoryData, Item, ItemByCategory
 
-from auth.permissions import ensure_is_inventory_staff
-from crud import inventory as inventory_crud
-
-import database
+from ..auth.permissions import ensure_is_inventory_staff
+from ..config import database
+from ..crud import inventory as inventory_crud
+from ..schemas.inventory import InventoryData, Item, ItemByCategory
 
 # An instance of APIRouter.
 router = APIRouter(
