@@ -8,7 +8,7 @@ from ..auth.permissions import (
 )
 from ..config import database
 from ..crud import order as order_crud
-from ..schemas.order import Order, OrderCreate, OrderUpdate
+from ..schemas.order import Order, OrderCreate, OrderUpdate, Status
 
 
 router = APIRouter(prefix="/orders", tags=["Order"])
@@ -61,6 +61,6 @@ def view_all_orders(
     dependencies=[Depends(ensure_is_kitchen_staff)]
 )
 def update_order_status_by_staff(
-    order_id: int, status_: str, db: Session = Depends(get_db)
+    order_id: int, status_: Status, db: Session = Depends(get_db)
 ):
     return order_crud.update_order_status(db, order_id, status_)
