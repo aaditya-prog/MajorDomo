@@ -42,8 +42,8 @@ def ensure_order_is_not_already_prepared(db_order: Orders):
         )
 
 
-def ensure_order_has_not_already_been_received(db_order: Orders):
-    if db_order.status == Status.RECIEVED:
+def ensure_order_is_not_being_prepared(db_order: Orders):
+    if db_order.status == Status.PREPARING:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Order is already being prepared"
@@ -64,8 +64,8 @@ def update_order(db: Session, order_id: int, order: OrderUpdate):
     ensure_order_is_not_cancelled(db_order)
     ensure_order_is_not_paid_for(db_order)
     ensure_order_is_not_already_prepared(db_order)
-    ensure_order_has_not_already_been_received(db_order)
-    if db_order.status == Status.PENDING:
+    ensure_order_is_not_being_prepared(db_order)
+    if db_order.status == Status.RECIEVED:
         db_order.items = order.items  # type: ignore
         db.commit()
         db.refresh(db_order)
@@ -76,8 +76,8 @@ def update_order_status(db: Session, order_id: int, order_status: str):
     db_order = get_existing_order(db, order_id)
     ensure_order_is_not_cancelled(db_order)
     ensure_order_is_not_paid_for(db_order)
-    if order_status == Status.RECIEVED:
-        ensure_order_has_not_already_been_received(db_order)
+    if order_status == Status.PREPARING:
+        ensure_order_is_not_being_prepared(db_order)
 
     if order_status == Status.PREPARED:
         ensure_order_is_not_already_prepared(db_order)
@@ -98,8 +98,8 @@ def cancel_order(db: Session, order_id: int):
     ensure_order_is_not_cancelled(db_order)
     ensure_order_is_not_paid_for(db_order)
     ensure_order_is_not_already_prepared(db_order)
-    ensure_order_has_not_already_been_received(db_order)
-    if db_order.status == Status.PENDING:
+    ensure_order_is_not_being_prepared(db_order)
+    if db_order.status == Status.RECIEVED:
         db_order.status = Status.CANCELLED  # type: ignore
         db.commit()
         return {"Order cancelled"}
@@ -113,7 +113,7 @@ def get_orders(
 ):
     if order_status:
         if order_status in (
-            Status.CANCELLED, Status.PAID, Status.PENDING,
+            Status.CANCELLED, Status.PAID, Status.PREPARING,
             Status.PREPARED, Status.RECIEVED
         ):
             db_orders = db.query(Orders).filter(

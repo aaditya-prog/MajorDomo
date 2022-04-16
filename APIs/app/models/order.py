@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Date, func, Integer, JSON, String
 
 from ..config.database import Base
+from ..schemas.order import Status
 
 
 class Orders(Base):
@@ -10,4 +11,4 @@ class Orders(Base):
     items = Column(JSON, nullable=False)
     order_date = Column(Date, server_default=func.now())
     table = Column(Integer, nullable=False)
-    status = Column(String, nullable=False, default="Pending")
+    status = Column(String, nullable=False, default=Status.RECIEVED)

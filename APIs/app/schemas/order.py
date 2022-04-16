@@ -31,8 +31,8 @@ class OrderUpdate(BaseModel):
 
 
 class Status(str, Enum):
-    PENDING = "Pending"
     RECIEVED = "Recieved"
+    PREPARING = "Preparing"
     PREPARED = "Prepared"
     PAID = "Paid"
     CANCELLED = "Cancelled"
