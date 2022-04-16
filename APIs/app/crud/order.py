@@ -72,14 +72,14 @@ def update_order(db: Session, order_id: int, order: OrderUpdate):
         return db_order
 
 
-def update_order_status(db: Session, order_id: int, status_: str):
+def update_order_status(db: Session, order_id: int, order_status: str):
     db_order = get_existing_order(db, order_id)
     ensure_order_is_not_cancelled(db_order)
     ensure_order_is_not_paid_for(db_order)
-    if status_ == Status.RECIEVED:
+    if order_status == Status.RECIEVED:
         ensure_order_has_not_already_been_received(db_order)
 
-    if status_ == Status.PREPARED:
+    if order_status == Status.PREPARED:
         ensure_order_is_not_already_prepared(db_order)
         if db_order.status != Status.RECIEVED:
             raise HTTPException(
@@ -87,7 +87,7 @@ def update_order_status(db: Session, order_id: int, status_: str):
                 detail="Order is has not been received"
             )
 
-    db_order.status = status_  # type: ignore
+    db_order.status = order_status  # type: ignore
     db.commit()
     db.refresh(db_order)
     return db_order
@@ -109,19 +109,20 @@ def get_orders(
     db: Session,
     offset: Optional[int] = 0,
     limit: Optional[int] = 20,
-    status_: Optional[str] = None
+    order_status: Optional[str] = None
 ):
-    if status_:
-        if status_ in (
+    if order_status:
+        if order_status in (
             Status.CANCELLED, Status.PAID, Status.PENDING,
             Status.PREPARED, Status.RECIEVED
         ):
             db_orders = db.query(Orders).filter(
-                Orders.status == status_).offset(offset).limit(limit).all()
+                Orders.status == order_status
+            ).offset(offset).limit(limit).all()
         else:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"{status_} is not a valid status"
+                detail=f"{order_status} is not a valid status"
             )
     db_orders = db.query(Orders).offset(offset).limit(limit).all()
 

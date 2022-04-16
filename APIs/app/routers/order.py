@@ -48,19 +48,19 @@ def cancel_order(order_id, db: Session = Depends(get_db)):
     dependencies=[Depends(ensure_cashier_or_kitchen_staff)]
 )
 def view_all_orders(
-    status: Optional[str] = None,
+    order_status: Optional[str] = None,
     offset: Optional[int] = 0,
     limit: Optional[int] = 20,
     db: Session = Depends(get_db)
 ):
-    return order_crud.get_orders(db, offset, limit, status)
+    return order_crud.get_orders(db, offset, limit, order_status)
 
 
 @router.patch(
-    "/{order_id}/{status_}",
+    "/{order_id}/{order_status}",
     dependencies=[Depends(ensure_is_kitchen_staff)]
 )
 def update_order_status_by_staff(
-    order_id: int, status_: Status, db: Session = Depends(get_db)
+    order_id: int, order_status: Status, db: Session = Depends(get_db)
 ):
-    return order_crud.update_order_status(db, order_id, status_)
+    return order_crud.update_order_status(db, order_id, order_status)
