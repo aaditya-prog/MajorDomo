@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String
 
-from ..config.database import Base
+from config.database import Base
 
 """
     Model: users

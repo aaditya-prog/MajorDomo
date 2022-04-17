@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Date, func, Integer, JSON, String
 
-from ..config.database import Base
+from config.database import Base
 
 
 class Orders(Base):

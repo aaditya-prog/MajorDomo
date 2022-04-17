@@ -2,13 +2,13 @@ from typing import Optional
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from ..auth.permissions import (
+from auth.permissions import (
     ensure_cashier_or_kitchen_staff,
     ensure_is_kitchen_staff
 )
-from ..config import database
-from ..crud import order as order_crud
-from ..schemas.order import Order, OrderCreate, OrderUpdate
+from config import database
+from crud import order as order_crud
+from schemas.order import Order, OrderCreate, OrderUpdate
 
 
 router = APIRouter(prefix="/orders", tags=["Order"])
