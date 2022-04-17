@@ -4,11 +4,11 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Optional
 
-from dotenv import load_dotenv
+from dotenv import find_dotenv, load_dotenv
 from pydantic import BaseSettings, EmailStr
 
 # Utilizing dotenv to load environment variables from the OS.
-env_path = os.getcwd() + "\\app\\.env"
+env_path = find_dotenv()
 load_dotenv(dotenv_path=env_path)
 
 

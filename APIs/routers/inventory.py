@@ -1,11 +1,11 @@
 from typing import Optional
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy.orm import Session
 
-from ..auth.permissions import ensure_is_inventory_staff
-from ..config import database
-from ..crud import inventory as inventory_crud
-from ..schemas.inventory import InventoryData, Item, ItemByCategory
+from auth.permissions import ensure_is_inventory_staff
+from config import database
+from crud import inventory as inventory_crud
+from fastapi import APIRouter, Depends, Query
+from schemas.inventory import InventoryData, Item, ItemByCategory
+from sqlalchemy.orm import Session
 
 # An instance of APIRouter.
 router = APIRouter(
@@ -33,7 +33,7 @@ def get_db():
 # Show all items in the inventory.
 @router.get("/item-list/", response_model=list[Item])
 def get_item(
-    offset: Optional[int],
+    offset: Optional[int] = 0,
     limit: Optional[int] = 20,
     db: Session = Depends(get_db)
 ):

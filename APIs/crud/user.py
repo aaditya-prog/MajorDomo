@@ -1,7 +1,7 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from ..models.user import User
+from models.user import User
 
 not_found = HTTPException(
     status_code=status.HTTP_404_NOT_FOUND,
