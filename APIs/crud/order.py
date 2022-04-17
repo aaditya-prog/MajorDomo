@@ -56,7 +56,7 @@ def create_order(db: Session, order: OrderCreate):
     db.add(db_order)
     db.commit()
     db.refresh(db_order)
-    return db_order
+    return db_order.dict()
 
 
 def update_order(db: Session, order_id: int, order: OrderUpdate):
@@ -69,7 +69,7 @@ def update_order(db: Session, order_id: int, order: OrderUpdate):
         db_order.items = order.items  # type: ignore
         db.commit()
         db.refresh(db_order)
-        return db_order
+        return db_order.dict()
 
 
 def update_order_status(db: Session, order_id: int, order_status: str):
@@ -90,7 +90,7 @@ def update_order_status(db: Session, order_id: int, order_status: str):
     db_order.status = order_status  # type: ignore
     db.commit()
     db.refresh(db_order)
-    return db_order
+    return db_order.dict()
 
 
 def cancel_order(db: Session, order_id: int):
@@ -111,6 +111,7 @@ def get_orders(
     limit: Optional[int] = 20,
     order_status: Optional[str] = None
 ):
+    db_orders: list[Orders]
     if order_status:
         if order_status in (
             Status.CANCELLED, Status.PAID, Status.PREPARING,
@@ -126,4 +127,4 @@ def get_orders(
             )
     db_orders = db.query(Orders).offset(offset).limit(limit).all()
 
-    return db_orders
+    return [db_order.dict() for db_order in db_orders]

@@ -12,3 +12,12 @@ class Orders(Base):
     order_date = Column(Date, server_default=func.now())
     table = Column(Integer, nullable=False)
     status = Column(String, nullable=False, default=Status.RECIEVED)
+
+    def dict(self):
+        return {
+            "items": self.items,
+            "table": self.table,
+            "order_id": self.order_id,
+            "order_date": self.order_date,
+            "status": self.status
+        }
