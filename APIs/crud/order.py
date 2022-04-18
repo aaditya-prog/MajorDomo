@@ -52,6 +52,7 @@ def ensure_order_is_not_being_prepared(db_order: Orders):
 
 # Create Order
 def create_order(db: Session, order: OrderCreate):
+    breakpoint()
     db_order = Orders(**order.dict())
     db.add(db_order)
     db.commit()
@@ -125,6 +126,7 @@ def get_orders(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"{order_status} is not a valid status"
             )
-    db_orders = db.query(Orders).offset(offset).limit(limit).all()
+    else:
+        db_orders = db.query(Orders).offset(offset).limit(limit).all()
 
     return [db_order.dict() for db_order in db_orders]
