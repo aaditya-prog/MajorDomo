@@ -11,7 +11,7 @@ class Orders(Base):
     items = Column(JSON, nullable=False)
     order_date = Column(Date, server_default=func.now())
     table = Column(Integer, nullable=False)
-    status = Column(String, nullable=False, default=Status.RECIEVED)
+    status = Column(String, nullable=False, default=Status.RECEIVED)
 
     def dict(self):
         return {
