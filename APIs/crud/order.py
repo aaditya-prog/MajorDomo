@@ -66,7 +66,7 @@ def update_order(db: Session, order_id: int, order: OrderUpdate):
     ensure_order_is_not_paid_for(db_order)
     ensure_order_is_not_already_prepared(db_order)
     ensure_order_is_not_being_prepared(db_order)
-    if db_order.status == Status.RECIEVED:
+    if db_order.status == Status.RECEIVED:
         db_order.items = order.items  # type: ignore
         db.commit()
         db.refresh(db_order)
@@ -82,7 +82,7 @@ def update_order_status(db: Session, order_id: int, order_status: Status):
 
     if order_status == Status.PREPARED:
         ensure_order_is_not_already_prepared(db_order)
-        if db_order.status != Status.RECIEVED:
+        if db_order.status != Status.RECEIVED:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Order is has not been received"
@@ -100,7 +100,7 @@ def cancel_order(db: Session, order_id: int):
     ensure_order_is_not_paid_for(db_order)
     ensure_order_is_not_already_prepared(db_order)
     ensure_order_is_not_being_prepared(db_order)
-    if db_order.status == Status.RECIEVED:
+    if db_order.status == Status.RECEIVED:
         db_order.status = Status.CANCELLED  # type: ignore
         db.commit()
         return {"Order cancelled"}
@@ -116,7 +116,7 @@ def get_orders(
     if order_status:
         if order_status in (
             Status.CANCELLED, Status.PAID, Status.PREPARING,
-            Status.PREPARED, Status.RECIEVED
+            Status.PREPARED, Status.RECEIVED
         ):
             db_orders = db.query(Orders).filter(
                 Orders.status == order_status
