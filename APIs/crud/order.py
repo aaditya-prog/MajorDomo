@@ -73,7 +73,7 @@ def update_order(db: Session, order_id: int, order: OrderUpdate):
         return db_order.dict()
 
 
-def update_order_status(db: Session, order_id: int, order_status: str):
+def update_order_status(db: Session, order_id: int, order_status: Status):
     db_order = get_existing_order(db, order_id)
     ensure_order_is_not_cancelled(db_order)
     ensure_order_is_not_paid_for(db_order)
@@ -110,7 +110,7 @@ def get_orders(
     db: Session,
     offset: Optional[int] = 0,
     limit: Optional[int] = 20,
-    order_status: Optional[str] = None
+    order_status: Optional[Status] = None
 ):
     db_orders: list[Orders]
     if order_status:
