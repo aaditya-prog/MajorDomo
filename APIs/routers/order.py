@@ -48,7 +48,7 @@ def cancel_order(order_id, db: Session = Depends(get_db)):
     dependencies=[Depends(ensure_cashier_or_kitchen_staff)]
 )
 def view_all_orders(
-    order_status: Optional[str] = None,
+    order_status: Optional[Status] = None,
     offset: Optional[int] = 0,
     limit: Optional[int] = 20,
     db: Session = Depends(get_db)
