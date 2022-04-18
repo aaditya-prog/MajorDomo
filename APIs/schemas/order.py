@@ -8,7 +8,7 @@ from schemas.food import Food
 
 class OrderItems(BaseModel):
     food: Food
-    amount: int
+    quantity: int
 
 
 class OrderBase(BaseModel):
