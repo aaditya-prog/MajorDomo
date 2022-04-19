@@ -1,1 +1,2 @@
-gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app
+pushd APIS
+poetry run gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app
