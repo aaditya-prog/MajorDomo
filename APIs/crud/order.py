@@ -52,7 +52,6 @@ def ensure_order_is_not_being_prepared(db_order: Orders):
 
 # Create Order
 def create_order(db: Session, order: OrderCreate):
-    breakpoint()
     db_order = Orders(**order.dict())
     db.add(db_order)
     db.commit()

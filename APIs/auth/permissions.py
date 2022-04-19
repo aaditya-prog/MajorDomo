@@ -20,10 +20,10 @@ def ensure_is_admin(
     return current_user
 
 
-def ensure_cashier_or_kitchen_staff(
+def ensure_waiter_or_cashier_or_kitchen_staff(
     current_user: ModelUser = Depends(AuthHandler.auth_wrapper)
 ):
-    if current_user.staff not in (Staff.CASHIER, Staff.KITCHEN_STAFF):
+    if current_user.staff not in (Staff.WAITER, Staff.CASHIER, Staff.KITCHEN_STAFF):
         raise unauthorized_error
 
     return current_user

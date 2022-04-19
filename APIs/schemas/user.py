@@ -8,6 +8,7 @@ class Staff(str, Enum):
     KITCHEN_STAFF = "Kitchen Staff"
     CASHIER = "Cashier"
     ADMIN = "Admin"
+    WAITER = "Waiter"
 
 
 class UserBase(BaseModel):
