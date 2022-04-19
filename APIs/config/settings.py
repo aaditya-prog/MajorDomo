@@ -23,11 +23,10 @@ class Settings(BaseSettings):
     POSTGRES_SERVER: Optional[str] = os.getenv("POSTGRES_SERVER", "localhost")
     POSTGRES_PORT: Optional[str] = os.getenv("POSTGRES_PORT")
     POSTGRES_DB: Optional[str] = os.getenv("POSTGRES_DB")
+    SSL_MODE: Optional[str] = os.getenv("SSL_MODE")
     DATABASE_URL = (
-        f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}"
-        f"@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}"
+        f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}?sslmode={SSL_MODE}"
     )
-
 
 # Using the @lru_cache() decorator on top,
 # the Settings object will be created only once, the first time it's called.

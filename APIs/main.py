@@ -1,9 +1,11 @@
-import uvicorn
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
+
 from routers import food, inventory, order, user
 
+from config.database import database
 description = """
 Based on the authentication levels, these API endpoints allow you to perform the following actions. ✔️
 
@@ -67,7 +69,6 @@ app = FastAPI(
     },
 )
 
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -76,6 +77,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.add_middleware(GZipMiddleware)
+
+
+@app.on_event("startup")
+async def startup():
+    await database.connect()
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    await database.disconnect()
+
 
 # Including the routers of the submodules respectively.
 app.include_router(user.router)

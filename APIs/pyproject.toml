@@ -26,6 +26,10 @@ alembic = "^1.7.6"
 Pillow = "^9.0.1"
 async-exit-stack = "^1.0.1"
 async_generator = "^1.10"
+gunicorn = "^20.1.0"
+databases = "^0.5.5"
+websockets = "^10.3"
+asyncpg = "^0.25.0"
 
 [tool.poetry.dev-dependencies]
 
