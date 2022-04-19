@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi.middleware.gzip import GZipMiddleware
 from routers import food, inventory, order, user
 
 description = """
@@ -67,21 +67,18 @@ app = FastAPI(
     },
 )
 
-origins = ["http://localhost:3000", "localhost:3000", "http://localhost:8000", "localhost:8000"]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(GZipMiddleware)
 
 # Including the routers of the submodules respectively.
 app.include_router(user.router)
 app.include_router(inventory.router)
 app.include_router(order.router)
 app.include_router(food.router)
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=5005)  # type: ignore
