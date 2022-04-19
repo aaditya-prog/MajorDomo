@@ -9,9 +9,7 @@ from schemas.food import Food, FoodData, FoodByCategory
 router = APIRouter(prefix="/food", tags=["Food Menu"])
 
 # at the end of the file, admin_router will be included in router
-admin_router = APIRouter(
-    dependencies=[Depends(ensure_is_admin)]
-)
+admin_router = APIRouter(dependencies=[Depends(ensure_is_admin)])
 
 """
  API Endpoints for Food Menu CRUD Operations.
@@ -34,14 +32,10 @@ def get_food(db: Session = Depends(get_db)):
 
 # Show food by selected category
 @router.get("/menu-by-category/", response_model=FoodByCategory)
-def get_food_category(
-    category: list[str] = Query(None), db: Session = Depends(get_db)
-):
+def get_food_category(category: list[str] = Query(None), db: Session = Depends(get_db)):
     result: dict = {}
     for each_category in category:
-        db_category = food_crud.get_food_by_category(
-            db=db, category=each_category
-        )
+        db_category = food_crud.get_food_by_category(db=db, category=each_category)
         result[each_category] = db_category
     return result
 

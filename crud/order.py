@@ -11,8 +11,7 @@ def get_existing_order(db: Session, order_id: int):
     db_order = db.query(Orders).filter(Orders.order_id == order_id).first()
     if db_order is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No record of such order"
+            status_code=status.HTTP_404_NOT_FOUND, detail="No record of such order"
         )
 
     return db_order
@@ -22,7 +21,7 @@ def ensure_order_is_not_cancelled(db_order: Orders):
     if db_order.status == Status.CANCELLED:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Order has already been cancelled"
+            detail="Order has already been cancelled",
         )
 
 
@@ -30,7 +29,7 @@ def ensure_order_is_not_paid_for(db_order: Orders):
     if db_order.status == Status.PAID:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Order has already been paid for"
+            detail="Order has already been paid for",
         )
 
 
@@ -38,7 +37,7 @@ def ensure_order_is_not_already_prepared(db_order: Orders):
     if db_order.status == Status.PREPARED:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Order has already been prepared"
+            detail="Order has already been prepared",
         )
 
 
@@ -46,7 +45,7 @@ def ensure_order_is_not_being_prepared(db_order: Orders):
     if db_order.status == Status.PREPARING:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Order is already being prepared"
+            detail="Order is already being prepared",
         )
 
 
@@ -84,7 +83,7 @@ def update_order_status(db: Session, order_id: int, order_status: Status):
         if db_order.status != Status.RECEIVED:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Order is has not been received"
+                detail="Order is has not been received",
             )
 
     db_order.status = order_status  # type: ignore
@@ -109,21 +108,28 @@ def get_orders(
     db: Session,
     offset: Optional[int] = 0,
     limit: Optional[int] = 20,
-    order_status: Optional[Status] = None
+    order_status: Optional[Status] = None,
 ):
     db_orders: list[Orders]
     if order_status:
         if order_status in (
-            Status.CANCELLED, Status.PAID, Status.PREPARING,
-            Status.PREPARED, Status.RECEIVED
+            Status.CANCELLED,
+            Status.PAID,
+            Status.PREPARING,
+            Status.PREPARED,
+            Status.RECEIVED,
         ):
-            db_orders = db.query(Orders).filter(
-                Orders.status == order_status
-            ).offset(offset).limit(limit).all()
+            db_orders = (
+                db.query(Orders)
+                .filter(Orders.status == order_status)
+                .offset(offset)
+                .limit(limit)
+                .all()
+            )
         else:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"{order_status} is not a valid status"
+                detail=f"{order_status} is not a valid status",
             )
     else:
         db_orders = db.query(Orders).offset(offset).limit(limit).all()

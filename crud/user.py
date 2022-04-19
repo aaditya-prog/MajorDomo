@@ -4,8 +4,7 @@ from sqlalchemy.orm import Session
 from models.user import User
 
 not_found = HTTPException(
-    status_code=status.HTTP_404_NOT_FOUND,
-    detail="User does not exists"
+    status_code=status.HTTP_404_NOT_FOUND, detail="User does not exists"
 )
 
 
@@ -39,7 +38,7 @@ def create_user(db: Session, user_dict: dict):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"User with the username '{username}' "
-            "already exists, pick another username."
+            "already exists, pick another username.",
         )
 
     db_user = User(**user_dict)

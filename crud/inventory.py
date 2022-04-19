@@ -15,13 +15,10 @@ from schemas.inventory import InventoryData
 # Check if item exists in the inventory
 # If not, raise exception
 def get_existing_item(db: Session, item_id: int):
-    item_exist = (
-        db.query(Inventory).filter(Inventory.item_id == item_id).first()
-    )
+    item_exist = db.query(Inventory).filter(Inventory.item_id == item_id).first()
     if item_exist is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Item not found in inventory"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Item not found in inventory"
         )
 
     return item_exist
@@ -32,11 +29,7 @@ def get_existing_item(db: Session, item_id: int):
 def ensure_required_quatity_is_available(db: Session, item_id: int, q: int):
     available_item = (
         db.query(Inventory)
-        .filter(
-            and_(
-                Inventory.item_id == item_id, Inventory.item_quantity >= q
-            )
-        )
+        .filter(and_(Inventory.item_id == item_id, Inventory.item_quantity >= q))
         .first()
     )
     if available_item is None:
@@ -44,21 +37,13 @@ def ensure_required_quatity_is_available(db: Session, item_id: int, q: int):
 
 
 # Get all items from the inventory.
-def get_items(
-    db: Session,
-    offset: Optional[int] = 0,
-    limit: Optional[int] = 20
-):
+def get_items(db: Session, offset: Optional[int] = 0, limit: Optional[int] = 20):
     return db.query(Inventory).offset(offset).limit(limit).all()
 
 
 # Get item by category.
 def get_item_by_category(db: Session, category: str):
-    return (
-        db.query(Inventory)
-        .filter(Inventory.item_category == category)
-        .all()
-    )
+    return db.query(Inventory).filter(Inventory.item_category == category).all()
 
 
 # Add Item

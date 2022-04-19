@@ -18,7 +18,7 @@ def get_existing_food(db: Session, food_id: int):
     if food_exist is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="The requested food item doesn't exist in the menu."
+            detail="The requested food item doesn't exist in the menu.",
         )
 
     return food_exist
@@ -26,13 +26,12 @@ def get_existing_food(db: Session, food_id: int):
 
 # Check same food present or not
 def ensure_food_does_not_exist(db: Session, food_name: str):
-    food_same = db.query(Food).filter(
-        func.lower(Food.food_name) == food_name.lower()
-    ).first()
+    food_same = (
+        db.query(Food).filter(func.lower(Food.food_name) == food_name.lower()).first()
+    )
     if food_same:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Food already present"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Food already present"
         )
 
 

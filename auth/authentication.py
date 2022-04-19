@@ -62,7 +62,7 @@ class AuthHandler:
     def auth_wrapper(
         cls,
         auth: HTTPAuthorizationCredentials = Security(security),
-        db: Session = Depends(get_db)
+        db: Session = Depends(get_db),
     ):
         username = cls.decode_token(auth.credentials)
 

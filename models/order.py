@@ -19,5 +19,5 @@ class Orders(Base):
             "table": self.table,
             "order_id": self.order_id,
             "order_date": self.order_date,
-            "status": self.status
+            "status": self.status,
         }

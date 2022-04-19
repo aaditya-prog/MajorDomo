@@ -31,7 +31,7 @@ def get_db():
     "/register",
     status_code=status.HTTP_201_CREATED,
     response_model=User,
-    dependencies=[Depends(ensure_is_admin)]
+    dependencies=[Depends(ensure_is_admin)],
 )
 async def register(user: UserCreate, db: Session = Depends(get_db)):
     # Use "validate_password" function from "Auth_Handler" class
@@ -45,7 +45,7 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
                 "letter, one lowercase letter, one numeral, "
                 "one special character and should be longer "
                 "than 6 characters and shorter than 20 characters"
-            )
+            ),
         )
 
     user_dict = user.dict()
@@ -56,8 +56,7 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
 
 @router.post("/auth/login", response_model=Token)
 def login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
-    db: Session = Depends(get_db)
+    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ):
     # Use "get_user_by_username" function to get user from the database.
     user_db = get_user_by_username(db, form_data.username)
@@ -71,9 +70,7 @@ def login(
         )
 
     password = user_db.password
-    verify_password = AuthHandler.verify_password(
-        form_data.password, password
-    )
+    verify_password = AuthHandler.verify_password(form_data.password, password)
     if not verify_password:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -86,9 +83,7 @@ def login(
 
 
 @router.get("/profile", response_model=User)
-def profile(
-    current_user: ModelUser = Depends(AuthHandler.auth_wrapper)
-):
+def profile(current_user: ModelUser = Depends(AuthHandler.auth_wrapper)):
     return current_user
 
 
@@ -106,14 +101,12 @@ async def change_password(
                 "letter, one lowercase letter, one numeral, "
                 "one special character and should be longer "
                 "than 6 characters and shorter than 20 characters"
-            )
+            ),
         )
 
     password = current_user.password
 
-    verify_password = AuthHandler.check_password(
-        passwords.old_password, password
-    )
+    verify_password = AuthHandler.check_password(passwords.old_password, password)
 
     if not verify_password:
         raise HTTPException(
@@ -125,14 +118,10 @@ async def change_password(
     if passwords.new_password != passwords.confirm_password:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="New password and Confirm Password do not match"
+            detail="New password and Confirm Password do not match",
         )
-    new_password_hash = AuthHandler.get_password_hash(
-        passwords.new_password
-    )
+    new_password_hash = AuthHandler.get_password_hash(passwords.new_password)
     user = User.from_orm(current_user)
     reset_password(db, user.id, new_password_hash)
 
-    return {
-        "message": f"Password updated for the user: {current_user.username}"
-    }
+    return {"message": f"Password updated for the user: {current_user.username}"}

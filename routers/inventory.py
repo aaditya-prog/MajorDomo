@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 router = APIRouter(
     prefix="/inventory",
     tags=["Inventory"],
-    dependencies=[Depends(ensure_is_inventory_staff)]
+    dependencies=[Depends(ensure_is_inventory_staff)],
 )
 
 
@@ -33,24 +33,17 @@ def get_db():
 # Show all items in the inventory.
 @router.get("/item-list/", response_model=list[Item])
 def get_item(
-    offset: Optional[int] = 0,
-    limit: Optional[int] = 20,
-    db: Session = Depends(get_db)
+    offset: Optional[int] = 0, limit: Optional[int] = 20, db: Session = Depends(get_db)
 ):
     return inventory_crud.get_items(db=db, offset=offset, limit=limit)
 
 
 # Show items by selected category
 @router.get("/item-by-category/", response_model=ItemByCategory)
-def get_item_category(
-    category: list[str] = Query(...),
-    db: Session = Depends(get_db)
-):
+def get_item_category(category: list[str] = Query(...), db: Session = Depends(get_db)):
     result: dict = {}
     for each_category in category:
-        db_category = inventory_crud.get_item_by_category(
-            db=db, category=each_category
-        )
+        db_category = inventory_crud.get_item_by_category(db=db, category=each_category)
         result[each_category] = db_category
     return result
 
@@ -63,9 +56,7 @@ def create_item(new_item: InventoryData, db: Session = Depends(get_db)):
 
 # Update item details.
 @router.put("/item/{item_id}/", response_model=Item)
-def update_item(
-    item_id: int, item: InventoryData, db: Session = Depends(get_db)
-):
+def update_item(item_id: int, item: InventoryData, db: Session = Depends(get_db)):
     return inventory_crud.update_item(db=db, item=item, item_id=item_id)
 
 

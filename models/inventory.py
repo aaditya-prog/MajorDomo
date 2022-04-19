@@ -1,5 +1,4 @@
-from sqlalchemy import (Column, Float, Integer,
-                        String, func)
+from sqlalchemy import Column, Float, Integer, String, func
 
 
 from config.database import Base

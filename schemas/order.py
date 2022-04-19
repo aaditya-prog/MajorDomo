@@ -15,10 +15,10 @@ class OrderBase(BaseModel):
     items: list[OrderItems]
     table: int
 
-    @validator('table')
+    @validator("table")
     def table_is_valid(cls, v):
         if v < 1 or v > 8:
-            raise ValueError('Not a valid table number')
+            raise ValueError("Not a valid table number")
         return v
 
 
