@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Date, func, Integer, JSON, String
 
-from config.database import Base
-from schemas.order import Status
+from app.config.database import Base
+from app.schemas.order import Status
 
 
 class Orders(Base):

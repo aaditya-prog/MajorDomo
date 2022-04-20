@@ -2,7 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import food, inventory, order, user
+from app.routers import food, inventory, order, user
 
 description = """
 Based on the authentication levels, these API endpoints allow you to perform the following actions. ✔️

@@ -2,8 +2,8 @@ from typing import Optional, Union
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from models.order import Orders
-from schemas.order import OrderCreate, OrderUpdate, Status
+from app.models.order import Orders
+from app.schemas.order import OrderCreate, OrderUpdate, Status
 
 
 def get_existing_order(db: Session, order_id: int):

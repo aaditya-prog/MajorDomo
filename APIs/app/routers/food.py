@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
-from auth.permissions import ensure_is_admin
-from config import database
-from crud import food as food_crud
-from schemas.food import Food, FoodData, FoodByCategory
+from app.auth.permissions import ensure_is_admin
+from app.config import database
+from app.crud import food as food_crud
+from app.schemas.food import Food, FoodData, FoodByCategory
 
 router = APIRouter(prefix="/food", tags=["Food Menu"])
 

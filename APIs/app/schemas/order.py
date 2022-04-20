@@ -3,7 +3,7 @@ from enum import Enum
 
 from pydantic import BaseModel, validator
 
-from schemas.food import Food
+from app.schemas.food import Food
 
 
 class OrderItems(BaseModel):

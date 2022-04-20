@@ -1,8 +1,8 @@
 from fastapi import Depends, HTTPException, status
 
 from .authentication import AuthHandler
-from models.user import User as ModelUser
-from schemas.user import Staff
+from app.models.user import User as ModelUser
+from app.schemas.user import Staff
 
 
 unauthorized_error = HTTPException(
