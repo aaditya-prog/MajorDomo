@@ -1,5 +1,6 @@
 from datetime import date
 from enum import Enum
+from typing import Optional
 
 from pydantic import BaseModel, validator
 
@@ -14,6 +15,7 @@ class OrderItems(BaseModel):
 class OrderBase(BaseModel):
     items: list[OrderItems]
     table: int
+    note: Optional[str]
 
     @validator("table")
     def table_is_valid(cls, v):

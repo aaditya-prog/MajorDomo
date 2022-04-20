@@ -39,7 +39,7 @@ You will be able to:
 
 You will be able to:
 
-* **Register, Login, Profile, Change Password.**
+* **Register Staffs, Login, Profile, Change Password.**
 * **Confirm Orders.**
 * ****
 
@@ -48,14 +48,13 @@ You will be able to:
 
 You will be able to:
 
-* **Register, Login, Profile, Change Password.**
+* **Login, Profile, Change Password.**
 * **Create, Read, Retrieve and Delete -  Inventory Items**
 * ****
 
 
 """
 # An instance of FastAPI class.
-
 app = FastAPI(
     title="Restaurant Management System (RMS) API",
     # description=description,

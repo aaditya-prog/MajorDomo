@@ -12,6 +12,7 @@ class Orders(Base):
     order_date = Column(Date, server_default=func.now())
     table = Column(Integer, nullable=False)
     status = Column(String, nullable=False, default=Status.RECEIVED)
+    note = Column(String)
 
     def dict(self):
         return {

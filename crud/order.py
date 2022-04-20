@@ -83,7 +83,7 @@ def update_order_status(db: Session, order_id: int, order_status: Status):
         if db_order.status != Status.RECEIVED:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Order is has not been received",
+                detail="Order has not been received",
             )
 
     db_order.status = order_status  # type: ignore
