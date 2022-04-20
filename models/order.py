@@ -21,4 +21,5 @@ class Orders(Base):
             "order_id": self.order_id,
             "order_date": self.order_date,
             "status": self.status,
+            "note": self.note
         }
