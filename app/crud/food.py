@@ -35,6 +35,11 @@ def ensure_food_does_not_exist(db: Session, food_name: str):
         )
 
 
+# Get Categories
+def get_category(db: Session):
+    return db.query(Food.food_category).distinct()
+
+
 # Get all food
 def get_food(db: Session):
     return db.query(Food).all()
