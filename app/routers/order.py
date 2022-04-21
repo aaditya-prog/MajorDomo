@@ -2,15 +2,9 @@ from typing import Optional
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-<<<<<<< HEAD:app/routers/order.py
 from app.auth.permissions import (
-    ensure_cashier_or_kitchen_staff,
-    ensure_is_kitchen_staff
-=======
-from auth.permissions import (
     ensure_waiter_or_cashier_or_kitchen_staff,
     ensure_is_kitchen_staff,
->>>>>>> 94fc5d1aae26a4c0d630759a86ff1e49c20fd853:routers/order.py
 )
 from app.config import database
 from app.crud import order as order_crud
