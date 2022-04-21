@@ -73,4 +73,4 @@ def delete_food(db: Session, food_id: int):
     food_remove = get_existing_food(db=db, food_id=food_id)
     db.delete(food_remove)
     db.commit()
-    return {"Food removed"}
+    return {"detail": "Food removed"}

@@ -101,7 +101,7 @@ def cancel_order(db: Session, order_id: int):
     if db_order.status == Status.RECEIVED:
         db_order.status = Status.CANCELLED  # type: ignore
         db.commit()
-        return {"Order cancelled"}
+        return {"detail": "Order cancelled"}
 
 
 def get_orders(
