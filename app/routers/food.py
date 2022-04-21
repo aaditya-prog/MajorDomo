@@ -25,7 +25,7 @@ def get_db():
 
 
 # Get Food Categories
-@router.get("/categories/", response_model=list[Food])
+@router.get("/categories/", response_model=list[str])
 def get_food_categories(db: Session = Depends(get_db)):
     return food_crud.get_category(db=db)
 
