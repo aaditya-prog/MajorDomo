@@ -37,7 +37,10 @@ def ensure_food_does_not_exist(db: Session, food_name: str):
 
 # Get Categories
 def get_category(db: Session):
-    return db.query(Food.food_category).distinct()
+    breakpoint()
+    dbquery = db.query(Food.food_category).distinct()
+    values = [category[0] for category in dbquery]
+    return values
 
 
 # Get all food
