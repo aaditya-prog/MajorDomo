@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from app.auth.permissions import ensure_is_admin
-from app.config import database
 from app.crud import food as food_crud
+from app.dependencies.session import get_db
 from app.schemas.food import Food, FoodData, FoodByCategory
 
 router = APIRouter(prefix="/food", tags=["Food Menu"])
@@ -14,14 +14,6 @@ admin_router = APIRouter(dependencies=[Depends(ensure_is_admin)])
 """
  API Endpoints for Food Menu CRUD Operations.
 """
-
-
-def get_db():
-    db = database.SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 # Get Food Categories

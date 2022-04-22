@@ -4,8 +4,8 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from app.auth.permissions import ensure_is_inventory_staff
-from app.config import database
 from app.crud import inventory as inventory_crud
+from app.dependencies.session import get_db
 from app.schemas.inventory import InventoryData, Item, ItemByCategory
 
 # An instance of APIRouter.
@@ -14,16 +14,6 @@ router = APIRouter(
     tags=["Inventory"],
     dependencies=[Depends(ensure_is_inventory_staff)],
 )
-
-
-# Creating a dependency function to make connection with the database.
-def get_db():
-    db = database.SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
 
 """
  API Endpoints for "Inventory" submodule.
