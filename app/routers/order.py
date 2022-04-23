@@ -37,7 +37,7 @@ def cancel_order(order_id, db: Session = Depends(get_db)):
 def view_all_orders(
     order_status: Optional[Status] = None,
     offset: Optional[int] = 0,
-    limit: Optional[int] = 20,
+    limit: Optional[int] = 1000,
     db: Session = Depends(get_db),
 ):
     return order_crud.get_orders(db, offset, limit, order_status)
