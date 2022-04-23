@@ -1,9 +1,18 @@
+#IDEs
 .idea/
-.env
 .vscode/
+
+#Environment Files
+.env
+
+#Cache files
 __pycache__
-venv
-.venv
 .mypy_cache
 .pytest_cache
+#Virtual Environment Files/Folders
+venv
+.venv
+
+#Migrations
 alembic/
+
