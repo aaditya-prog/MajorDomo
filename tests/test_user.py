@@ -1,10 +1,12 @@
-from tests.setup.db import user
+from app.schemas.user import Staff
+from tests.setup.db import generate_dummy_user
 from tests.setup.prep import get_testing_client
 
 client = get_testing_client()
 
 
 def test_login():
+    user = generate_dummy_user(Staff.ADMIN)
     login = {
         "username": user["username"],
         "password": user["password"]
