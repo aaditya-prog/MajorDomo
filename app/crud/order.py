@@ -65,7 +65,7 @@ def update_order(db: Session, order_id: int, order: OrderUpdate):
     ensure_order_is_not_already_prepared(db_order)
     ensure_order_is_not_being_prepared(db_order)
     if db_order.status == Status.RECEIVED:
-        db_order.items = order.items  # type: ignore
+        db_order.items = order.dict()["items"]  # type: ignore
         db.commit()
         db.refresh(db_order)
         return db_order.dict()
@@ -133,5 +133,4 @@ def get_orders(
             )
     else:
         db_orders = db.query(Orders).offset(offset).limit(limit).all()
-
     return [db_order.dict() for db_order in db_orders]
