@@ -24,9 +24,8 @@ class Settings(BaseSettings):
         POSTGRES_SERVER: Optional[str] = os.getenv("POSTGRES_SERVER", "localhost")
         POSTGRES_PORT: Optional[str] = os.getenv("POSTGRES_PORT")
         POSTGRES_DB: Optional[str] = os.getenv("POSTGRES_DB")
-        SSL_MODE: Optional[str] = os.getenv("SSL_MODE")
         DATABASE_URL = (
-            f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}?sslmode={SSL_MODE}"
+            f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}"
         )
     else:
         host_server = os.environ.get("host_server", "localhost")
