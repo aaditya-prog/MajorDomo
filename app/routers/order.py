@@ -6,19 +6,11 @@ from app.auth.permissions import (
     ensure_waiter_or_cashier_or_kitchen_staff,
     ensure_is_kitchen_staff,
 )
-from app.config import database
 from app.crud import order as order_crud
+from app.dependencies.session import get_db
 from app.schemas.order import Order, OrderCreate, OrderUpdate, Status
 
 router = APIRouter(prefix="/orders", tags=["Order"])
-
-
-def get_db():
-    db = database.SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 # Add new order
