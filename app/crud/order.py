@@ -55,7 +55,7 @@ def create_order(db: Session, order: OrderCreate):
     db.add(db_order)
     db.commit()
     db.refresh(db_order)
-    return db_order.dic()
+    return db_order.dict()
 
 
 def update_order(db: Session, order_id: int, order: OrderUpdate):

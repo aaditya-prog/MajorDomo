@@ -37,7 +37,6 @@ def create_admin():
     user_copy = generate_dummy_user(Staff.ADMIN)
     hashed_password = AuthHandler.get_password_hash(user_copy["password"])
     user_copy["password"] = hashed_password
-    breakpoint()
     db_user = User(**user_copy)
     db: Session = TestingSession()
     try:

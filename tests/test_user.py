@@ -32,3 +32,5 @@ def test_user_registration_route_is_protected():
     )
     assert response.status_code == 403
     assert response.json() == {"detail": "Not authenticated"}
+
+
