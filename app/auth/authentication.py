@@ -39,11 +39,11 @@ class AuthHandler:
 
     # Function to encode the JWT Token
     @classmethod
-    def encode_token(cls, user_id):
+    def encode_token(cls, username):
         payload = {
             "exp": datetime.utcnow() + timedelta(days=0, hours=12),
             "iat": datetime.utcnow(),
-            "sub": user_id,
+            "sub": username,
         }
         return jwt.encode(payload, cls.secret, algorithm="HS256")
 
