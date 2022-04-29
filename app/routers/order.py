@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 
 from app.auth.permissions import (
     ensure_waiter_or_cashier_or_kitchen_staff,
-    ensure_is_kitchen_staff,
 )
 from app.crud import order as order_crud
 from app.dependencies.session import get_db
@@ -44,7 +43,8 @@ def view_all_orders(
 
 
 @router.patch(
-    "/{order_id}/{order_status}", dependencies=[Depends(ensure_is_kitchen_staff)]
+
+    "/{order_id}/{order_status}", dependencies=[Depends(ensure_waiter_or_cashier_or_kitchen_staff)]
 )
 def update_order_status_by_staff(
     order_id: int, order_status: Status, db: Session = Depends(get_db)
