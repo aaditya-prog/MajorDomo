@@ -23,13 +23,13 @@ def get_food_categories(db: Session = Depends(get_db)):
 
 
 # Show all food of food menu
-@router.get("/menu-list/", response_model=list[Food], dependencies=[Depends(ensure_is_admin)])
+@router.get("/menu-list/", response_model=list[Food])
 def get_food(db: Session = Depends(get_db)):
     return food_crud.get_food(db=db)
 
 
 # Show food by selected category
-@router.get("/menu-by-category/", response_model=FoodByCategory, dependencies=[Depends(ensure_is_admin)])
+@router.get("/menu-by-category/", response_model=FoodByCategory)
 def get_food_by_category(category: list[str] = Query(None), db: Session = Depends(get_db)):
     result: dict = {}
     for each_category in category:
