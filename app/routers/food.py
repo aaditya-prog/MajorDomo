@@ -17,7 +17,7 @@ admin_router = APIRouter(dependencies=[Depends(ensure_is_admin)])
 
 
 # Get Food Categories
-@router.get("/categories/", response_model=list[str], dependencies=[Depends(ensure_is_admin)])
+@router.get("/categories/", response_model=list[str])
 def get_food_categories(db: Session = Depends(get_db)):
     return food_crud.get_category(db=db)
 
