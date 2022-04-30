@@ -7,8 +7,8 @@ from app.auth.permissions import ensure_is_admin
 from app.crud.user import create_user, get_user_by_username, reset_password
 from app.dependencies.session import get_db
 from app.models.user import User as ModelUser
-from app.schemas.user import ChangePassword, User, UserCreate
 from app.schemas.token import Token
+from app.schemas.user import ChangePassword, User, UserCreate, Staff
 
 router = APIRouter(prefix="/user", tags=["User"])
 
@@ -21,7 +21,6 @@ router = APIRouter(prefix="/user", tags=["User"])
 @router.post(
     "/register",
     status_code=status.HTTP_201_CREATED,
-    response_model=User,
     dependencies=[Depends(ensure_is_admin)],
 )
 async def register(user: UserCreate, db: Session = Depends(get_db)):
@@ -38,16 +37,22 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
                 "than 6 characters and shorter than 20 characters"
             ),
         )
-
+    if not user.staff not in (Staff.WAITER, Staff.CASHIER, Staff.KITCHEN_STAFF):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=(
+                "Invalid Staff, Permitted: 'Inventory Staff', 'Kitchen Staff', 'Cashier', 'Admin', 'Waiter'"
+            ),
+        )
     user_dict = user.dict()
     user_dict["password"] = AuthHandler.get_password_hash(user.password)
     db_user = create_user(db, user_dict)
-    return db_user
+    return {"detail": f"User account created, username: {db_user.username}, role: {db_user.staff}"}
 
 
 @router.post("/auth/login", response_model=Token)
 def login(
-    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+        form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ):
     # Use "get_user_by_username" function to get user from the database.
     user_db = get_user_by_username(db, form_data.username)
@@ -80,9 +85,9 @@ def profile(current_user: ModelUser = Depends(AuthHandler.auth_wrapper)):
 
 @router.patch("/change-password")
 async def change_password(
-    passwords: ChangePassword,
-    current_user: ModelUser = Depends(AuthHandler.auth_wrapper),
-    db: Session = Depends(get_db),
+        passwords: ChangePassword,
+        current_user: ModelUser = Depends(AuthHandler.auth_wrapper),
+        db: Session = Depends(get_db),
 ):
     if not AuthHandler.validate_password(passwords.new_password):
         raise HTTPException(
