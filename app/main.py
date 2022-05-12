@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
@@ -82,3 +83,7 @@ app.include_router(user.router)
 app.include_router(inventory.router)
 app.include_router(order.router)
 app.include_router(food.router)
+
+
+if __name__ == '__main__':
+    uvicorn.run(app, port=8000, host='192.168.1.17')
