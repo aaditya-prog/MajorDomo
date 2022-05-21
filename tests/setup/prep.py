@@ -2,7 +2,7 @@ from functools import lru_cache
 
 from fastapi.testclient import TestClient
 
-from app.main import app
+from main import app
 from app.config.database import Base
 from app.dependencies.session import get_db
 from .db import create_admin, engine, get_test_session
