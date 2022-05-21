@@ -10,6 +10,8 @@ attrs==21.2.0
 toml==0.10.2
 psycopg2==2.9.1
 py==1.10.0
+python-multipart==0.0.5
+regex==2021.8.28
 setuptools==58.1.0
 alembic==1.7.6
 uvicorn==0.15.0
