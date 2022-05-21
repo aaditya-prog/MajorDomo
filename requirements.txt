@@ -1,0 +1,13 @@
+fastapi==0.68.1
+PyJWT==2.2.0
+passlib==1.7.4
+SQLAlchemy==1.4.25
+python-dotenv==0.19.0
+pydantic==1.8.2
+pip==22.0.4
+attrs==21.2.0
+toml==0.10.2
+py==1.10.0
+setuptools==58.1.0
+alembic==1.7.6
+uvicorn==0.15.0
