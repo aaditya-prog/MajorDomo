@@ -21,7 +21,6 @@ router = APIRouter(prefix="/user", tags=["User"])
 @router.post(
     "/register",
     status_code=status.HTTP_201_CREATED,
-    dependencies=[Depends(ensure_is_admin)],
 )
 async def register(user: UserCreate, db: Session = Depends(get_db)):
     # Use "validate_password" function from "Auth_Handler" class
